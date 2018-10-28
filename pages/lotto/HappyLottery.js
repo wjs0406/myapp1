@@ -193,10 +193,21 @@ export default class HappyLottery extends Component {
       // end 临时写死部分=========
 
     //请求接口示例
-    /*homePageApi.getBuyLotteryNumRequest(1,2,3).then((data) => {//接口请求成功执行，后台返回的值data
+      const params = { //往后台传的值
+        "member_id":"123",
+        "rlottery_type_id":"10",
+        "money":this.state.money,
+        "num_term":"20181024",
+        "play_name":"七星彩",
+        "multiple":"12", //倍数
+        "orderInfo":[q_data,h_data]
+      }
+    /*homePageApi.getBuyLotteryNumRequest(params).then((data) => {//接口请求成功执行，后台返回的值data
           alert(JSON.stringify(data));  //对象用这样弹的窗调试
-          this.state.betnum = data.tmpnum; //后台返回的值，具体变量名再改
-          this.state.money = data.money; //后台返回的值
+          this.setState({
+              betnum: data.tmpnum, //后台返回的值，具体变量名再改
+              money: data.tmpmoney,
+          })
       }).catch((error) => { //接口请求失败执行
           Toast(error); //错误提示
       });*/
@@ -211,7 +222,7 @@ export default class HappyLottery extends Component {
     const chosed_q_num = this.state.q_data.length;  //当前选中红球的个数
     if(chosed_q_num < this.state.frontMinNo){
         Toast.info(`至少选择${this.state.frontMinNo}个前区号码!`);
-        return false;
+      return false;
     }
     const chosed_h_num = this.state.h_data.length;  //当前选中蓝球的个数
     if(chosed_h_num < this.state.backMiNNo){
@@ -220,7 +231,7 @@ export default class HappyLottery extends Component {
     }
 
     const { navigation } = this.props;  //路由，做页面跳转
-    navigation.navigate('SevenDetail', {
+    navigation.navigate('HappyDetail', {
       betnum: this.state.betnum, //往跳转的页面传值，变量名：betnum  注数
       money: this.state.money, //金额元
       q_data: this.state.q_data,//当前选中的所有红球
@@ -306,7 +317,6 @@ export default class HappyLottery extends Component {
                   <Text onPress={() => {this.radomNums('q',this.state.autoChooseFront,35)}} style={{width:80,height:50,borderWidth:1,borderColor:'#c7c7cb',fontSize:18,lineHeight:50,textAlign:'center',color:'#d44840'}}>机选</Text>
                 </View>
               </View>
-
               <View style={styles.sevenContentBtn}>
                 <View style={styles.ContentRightTop}>
                   <View style={styles.ContentBlock}>

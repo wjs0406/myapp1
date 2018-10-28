@@ -24,7 +24,7 @@ constructor(props) {
     }
 }
 
-changeSelect=(states,no)=>{
+changeSelect=(states,no,site)=>{
   this.state.isSelect = !states;
   if(states){
     this.setState({
@@ -45,7 +45,7 @@ changeSelect=(states,no)=>{
       },
     });
     //this.props.func(0,{field_no:'q',num:no});
-    this.props.func(0,{field_no:'q',num:no});
+    this.props.func(0,{field_no:'q',num:no,site:site});
   }else {
     this.setState({
       mystyle:{
@@ -65,7 +65,7 @@ changeSelect=(states,no)=>{
       },
     });
     //this.props.func(1,{field_no:'q',num:no});
-    this.props.func(1,{field_no:'q',num:no});
+    this.props.func(1,{field_no:'q',num:no,site:site});
     
   }
 
@@ -75,7 +75,7 @@ changeSelect=(states,no)=>{
   render() {
     return (
         <View>
-            <Text style={this.state.mystyle} onPress={() => {this.changeSelect(this.state.isSelect,this.props.no)}}>{this.props.no}</Text>
+            <Text style={this.state.mystyle} onPress={() => {this.changeSelect(this.state.isSelect,this.props.no,this.props.site)}}>{this.props.no}</Text>
         </View>
     );
   }

@@ -51,6 +51,7 @@ import TabBar from './components/base/TabBar';
 import SevenLottery from './pages/lotto/SevenLottery';
 import SevenDetail from './pages/lotto/SevenDetail';
 import HappyLottery from './pages/lotto/HappyLottery';
+import HappyDetail from './pages/lotto/HappyDetail';
 import SevenOrderDetails from './pages/lotto/SevenOrderDetails';
 
 
@@ -129,10 +130,11 @@ const HomeTab = TabNavigator(
 
 const AppStack = StackNavigator(
   {
+    SevenLottery: { screen: SevenLottery },
     HappyLottery: { screen: HappyLottery },
-      SevenOrderDetails: { screen: SevenOrderDetails },
-      SevenLottery: { screen: SevenLottery },
-    SevenDetail: { screen: SevenDetail }, 
+    SevenDetail: { screen: SevenDetail },
+    HappyDetail: { screen: HappyDetail },
+    SevenOrderDetails: { screen: SevenOrderDetails },
     // SplashPage: { screen: SplashPage }, // 启动页
     // LoginPage: { screen: LoginPage }, // 登录页
     // RegisterPage: { screen: RegisterPage }, // 注册页
