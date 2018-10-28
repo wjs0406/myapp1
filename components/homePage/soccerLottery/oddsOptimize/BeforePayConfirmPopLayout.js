@@ -271,6 +271,9 @@ export default class BeforePayConfirmPopLayout extends Component {
           isShowTopMargin={false}
           isShowArrow={false}
         />
+        <View>
+            <Text>追加投注</Text>
+        </View>
         <View style={{ height: 5, backgroundColor: 'rgb(246,247,248)' }} />
         {this.renderMiddieContent()}
         <MineBottomButtonLayout
