@@ -4,6 +4,7 @@ import {AppRegistry, View, Text, ScrollView, StyleSheet, Button} from 'react-nat
 // 导入组件，组件js文件名首字母大写，导入省略.js
 import Item from '../../components/item/Item';
 import {Toast} from "teaset";
+import * as HappyApi from "../../api/lotto/HappyApi";
 
 const styles = StyleSheet.create({
   sevenContent: {
@@ -106,7 +107,6 @@ const styles = StyleSheet.create({
   },
 });
 
-
 export default class SevenLottery extends Component {
 
   constructor(props) {
@@ -114,68 +114,78 @@ export default class SevenLottery extends Component {
     this.state = {
       sevbetnum: 0, //几注
       sevmoney: 0, //金额
-      num_term: '2018123', //第几期
-      one_data: [],
+      num_term: '', //第几期
+      end_time: '', //截止时间
+      one_data: [], //当前点击的球
+      // view_data:[], //子组件显示控制
+      all_data: [], //所有点击的球
+
     }
+
+
   }
 
+  //生命周期，render前加载页面
+  componentWillMount() {
+    //获取期号和截止时间
+    let lottery_id = '10';
+    HappyApi.termTime(lottery_id).then((data) => {//接口请求成功执行，后台返回的值data
+        // alert(JSON.stringify(data));
+        this.setState({
+          num_term: data.num_term, //后台返回的值，具体变量名再改
+          end_time: data.end_time,
+        })
+      }).catch((error) => { //接口请求失败执行
+      Toast(error); //错误提示
+    });
+
+  }
 
   /**
    * 点击球触发的事件
    * @param flg
    * @param qiu
    */
-  changeBetnum = (flg, qiu) => {
+  changeBetnum = (flg, qiu, clearFun) => {
+    if(typeof this.clearBall !== "function"){
+      this.clearBall = clearFun;
+    }
+    let one_data = this.state.one_data;
     if (flg === 1) { //选中一个球
-      // if(qiu.site === 'one'){//第一位
-      //   this.state.one_data.push({"field_no":"1","num":qiu.num,site:qiu.site});
-      // }else if(qiu.site === 'two'){
-      //   this.state.one_data.push({"field_no":"2","num":qiu.num,site:qiu.site});
-      // }else if(qiu.site === 'three'){
-      //   this.state.one_data.push({"field_no":"3","num":qiu.num,site:qiu.site});
-      // }else if(qiu.site === 'four'){
-      //   this.state.one_data.push({"field_no":"4","num":qiu.num,site:qiu.site});
-      // }else if(qiu.site === 'five'){
-      //   this.state.one_data.push({"field_no":"5","num":qiu.num,site:qiu.site});
-      // }else if(qiu.site === 'six'){
-      //   this.state.one_data.push({"field_no":"6","num":qiu.num,site:qiu.site});
-      // }else if(qiu.site === 'seven'){
-      //   this.state.one_data.push({"field_no":"7","num":qiu.num,site:qiu.site});
-      // }
-
       switch (qiu.site) {
         case 'one':
-          this.state.one_data.push({"field_no":"1","num":qiu.num,site:qiu.site});
+          one_data.push({"field_no": "1", "num": qiu.num, site: qiu.site});
           break;
         case 'two':
-          this.state.one_data.push({"field_no":"2","num":qiu.num,site:qiu.site});
+          one_data.push({"field_no": "2", "num": qiu.num, site: qiu.site});
           break;
         case 'three':
-          this.state.one_data.push({"field_no":"3","num":qiu.num,site:qiu.site});
+          one_data.push({"field_no": "3", "num": qiu.num, site: qiu.site});
           break;
         case 'four':
-          this.state.one_data.push({"field_no":"4","num":qiu.num,site:qiu.site});
+          one_data.push({"field_no": "4", "num": qiu.num, site: qiu.site});
           break;
         case 'five':
-          this.state.one_data.push({"field_no":"5","num":qiu.num,site:qiu.site});
+          one_data.push({"field_no": "5", "num": qiu.num, site: qiu.site});
           break;
         case 'six':
-          this.state.one_data.push({"field_no":"6","num":qiu.num,site:qiu.site});
+          one_data.push({"field_no": "6", "num": qiu.num, site: qiu.site});
           break;
         case 'seven':
-          this.state.one_data.push({"field_no":"7","num":qiu.num,site:qiu.site});
+          one_data.push({"field_no": "7", "num": qiu.num, site: qiu.site});
           break;
-          default :
+        default :
           break;
       }
-
     } else if (flg === 0) { //取消选中一个球
-      const index = this.state.one_data.findIndex(element => (element.num === qiu.num && element.site === qiu.site));
+      const index = one_data.findIndex(element => (element.num === qiu.num && element.site === qiu.site));
       if (index !== -1) {
-        this.state.one_data.splice(index, 1);
+        one_data.splice(index, 1);
       }
     }
-
+    this.setState({
+      one_data: one_data,
+    });
     let one_arr = this.state.one_data.filter(item => item.site === 'one');
     let two_arr = this.state.one_data.filter(item => item.site === 'two');
     let three_arr = this.state.one_data.filter(item => item.site === 'three');
@@ -184,33 +194,24 @@ export default class SevenLottery extends Component {
     let six_arr = this.state.one_data.filter(item => item.site === 'six');
     let seven_arr = this.state.one_data.filter(item => item.site === 'seven');
 
-
     //判断满足7个都选中一个，才会请求接口
-    if(one_arr.length !== 0 && two_arr.length !== 0 && three_arr.length !== 0 && four_arr.length !==0 && five_arr.length !== 0 && six_arr.length !== 0 && seven_arr.length !== 0){
-      // 临时写死部分=========
-      let tmpnum = this.state.sevbetnum + 1;
-      let tmpmoney = tmpnum * 2;
-
-      this.setState({
-        sevbetnum: tmpnum,
-        sevmoney: tmpmoney,
-      })
-      // end 临时写死部分=========
-
-
-      //请求接口示例
-      /*homePageApi.getBuyLotteryNumRequest(params).then((data) => {//接口请求成功执行，后台返回的值data
-          alert(JSON.stringify(data));  //对象用这样弹的窗调试
+    if (one_arr.length !== 0 && two_arr.length !== 0 && three_arr.length !== 0 && four_arr.length !== 0 && five_arr.length !== 0 && six_arr.length !== 0 && seven_arr.length !== 0) {
+      let onedata = JSON.stringify(this.state.one_data);
+      HappyApi.sevenbetnum(onedata)
+        .then((data) => {//接口请求成功执行，后台返回的值data
+          //alert(JSON.stringify(data));  //对象用这样弹的窗调试
           this.setState({
-              betnum: data.tmpnum, //后台返回的值，具体变量名再改
-              money: data.tmpmoney,
+            sevbetnum: data.note, //后台返回的值，具体变量名再改
+            sevmoney: data.note * 2,
           })
-      }).catch((error) => { //接口请求失败执行
-          Toast(error); //错误提示
-      });*/
+        }).catch((error) => { //接口请求失败执行
+        Toast(error); //错误提示
+      });
     }
-
   }
+
+
+
 
   /**
    * 跳转到下一页
@@ -224,47 +225,88 @@ export default class SevenLottery extends Component {
     let five_arr = this.state.one_data.filter(item => item.site === 'five');
     let six_arr = this.state.one_data.filter(item => item.site === 'six');
     let seven_arr = this.state.one_data.filter(item => item.site === 'seven');
-    if(!one_arr.length){
+    if (!one_arr.length) {
       Toast.info(`第一位至少选中1个数字!`);
       return false;
     }
-    if(!two_arr.length){
+    if (!two_arr.length) {
       Toast.info(`第二位至少选中1个数字!`);
       return false;
     }
-    if(!three_arr.length){
+    if (!three_arr.length) {
       Toast.info(`第三位至少选中1个数字!`);
       return false;
     }
-    if(!four_arr.length){
+    if (!four_arr.length) {
       Toast.info(`第四位至少选中1个数字!`);
       return false;
     }
-    if(!five_arr.length){
+    if (!five_arr.length) {
       Toast.info(`第五位至少选中1个数字!`);
       return false;
     }
-    if(!six_arr.length){
+    if (!six_arr.length) {
       Toast.info(`第六位至少选中1个数字!`);
       return false;
     }
-    if(!seven_arr.length){
+    if (!seven_arr.length) {
       Toast.info(`第七位至少选中1个数字!`);
       return false;
     }
+
+
+    //将one_data、sevbetnum、sevmoney放进all_data
+    let all_data =this.state.all_data;
+    let one_object = {
+      one_data:this.state.one_data,
+      sevbetnum: this.state.sevbetnum,
+      sevmoney: this.state.sevmoney,
+    };
+
+    all_data.push(one_object);
+    this.setState({
+      all_data: all_data,
+    })
+    // alert(JSON.stringify(this.state.all_data));
 
     const {navigation} = this.props;  //路由，做页面跳转
     navigation.navigate('SevenDetail', {
       sevbetnum: this.state.sevbetnum, //往跳转的页面传值，变量名：betnum  注数
       sevmoney: this.state.sevmoney, //金额元
-      one_data: this.state.one_data,//当前选中的所有红球
-      num_term: this.state.num_term,//期号
+      num_term: this.state.num_term, //期号
+      end_time: this.state.end_time, //截止时间
+      one_data: this.state.one_data, //当前选中的所有红球
+      all_data: this.state.all_data, //每一个one_data数组放进去
+      clearFunc: this.clearItem,
+      clearAll: this.clearItem_all,
     });
+  }
+
+  /**
+   * 清除按钮
+   */
+  clearItem = () => {
+    this.setState({
+      one_data: [], //清空one_data数据
+      sevbetnum: 0,
+      sevmoney:0,
+    })
+    this.clearBall();
+  }
+
+  /**
+   * 第二页清除按钮
+   */
+  clearItem_all = () => {
+    this.setState({
+      all_data: [], //清空all_data数据
+      sevbetnum: 0,
+      sevmoney:0,
+    })
   }
 
 
   render() {
-
     return (
       <View style={styles.sevenContent}>
         <View style={styles.sevenContentHeader}>
@@ -272,163 +314,163 @@ export default class SevenLottery extends Component {
         </View>
         <View style={styles.ContentBackground}>
           <ScrollView>
-            <Text style={styles.ContentDate}>第{this.state.num_term}期<Text style={{color: '#d44840'}}> 10-19
-              20:00截止</Text></Text>
+            <Text style={styles.ContentDate}>第{this.state.num_term}期<Text
+              style={{color: '#d44840'}}> {this.state.end_time}截止</Text></Text>
             <View style={styles.ContentTip}>
               <Text style={styles.ContentTipText}>每位至少选择1个号</Text>
               <Text style={styles.ContentTipText}>每周二、五、日开奖，最高奖项500万</Text>
             </View>
-
+            {/*第一位*/}
             <View style={styles.sevenContentBtn}>
               <View style={styles.sevenContentBtnLeft}>
                 <Text style={styles.ContentLeftTitle}>第一位</Text>
               </View>
               <View style={styles.ContentRightTop}>
                 <View style={styles.ContentBlock}>
-                  <Item site='one' no="0" func={this.changeBetnum}/>
-                  <Item site='one' no="1" func={this.changeBetnum}/>
-                  <Item site='one' no="2" func={this.changeBetnum}/>
-                  <Item site='one' no="3" func={this.changeBetnum}/>
-                  <Item site='one' no="4" func={this.changeBetnum}/>
+                  <Item site='one' no="0" func={this.changeBetnum} data={this.state.one_data}/>
+                  <Item site='one' no="1" func={this.changeBetnum} data={this.state.one_data}/>
+                  <Item site='one' no="2" func={this.changeBetnum} data={this.state.one_data}/>
+                  <Item site='one' no="3" func={this.changeBetnum} data={this.state.one_data}/>
+                  <Item site='one' no="4" func={this.changeBetnum} data={this.state.one_data}/>
                 </View>
                 <View style={styles.ContentBlock}>
-                  <Item site='one' no="5" func={this.changeBetnum}/>
-                  <Item site='one' no="6" func={this.changeBetnum}/>
-                  <Item site='one' no="7" func={this.changeBetnum}/>
-                  <Item site='one' no="8" func={this.changeBetnum}/>
-                  <Item site='one' no="9" func={this.changeBetnum}/>
+                  <Item site='one' no="5" func={this.changeBetnum} data={this.state.one_data}/>
+                  <Item site='one' no="6" func={this.changeBetnum} data={this.state.one_data}/>
+                  <Item site='one' no="7" func={this.changeBetnum} data={this.state.one_data}/>
+                  <Item site='one' no="8" func={this.changeBetnum} data={this.state.one_data}/>
+                  <Item site='one' no="9" func={this.changeBetnum} data={this.state.one_data}/>
                 </View>
               </View>
             </View>
-
+            {/*第二位*/}
             <View style={styles.sevenContentBtn}>
               <View style={styles.sevenContentBtnLeft}>
                 <Text style={styles.ContentLeftTitle}>第二位</Text>
               </View>
               <View style={styles.ContentRightTop}>
                 <View style={styles.ContentBlock}>
-                  <Item site='two' no="0" func={this.changeBetnum}/>
-                  <Item site='two' no="1" func={this.changeBetnum}/>
-                  <Item site='two' no="2" func={this.changeBetnum}/>
-                  <Item site='two' no="3" func={this.changeBetnum}/>
-                  <Item site='two' no="4" func={this.changeBetnum}/>
+                  <Item site='two' no="0" func={this.changeBetnum} data={this.state.one_data}/>
+                  <Item site='two' no="1" func={this.changeBetnum} data={this.state.one_data}/>
+                  <Item site='two' no="2" func={this.changeBetnum} data={this.state.one_data}/>
+                  <Item site='two' no="3" func={this.changeBetnum} data={this.state.one_data}/>
+                  <Item site='two' no="4" func={this.changeBetnum} data={this.state.one_data}/>
                 </View>
                 <View style={styles.ContentBlock}>
-                  <Item site='two' no="5" func={this.changeBetnum}/>
-                  <Item site='two' no="6" func={this.changeBetnum}/>
-                  <Item site='two' no="7" func={this.changeBetnum}/>
-                  <Item site='two' no="8" func={this.changeBetnum}/>
-                  <Item site='two' no="9" func={this.changeBetnum}/>
+                  <Item site='two' no="5" func={this.changeBetnum} data={this.state.one_data}/>
+                  <Item site='two' no="6" func={this.changeBetnum} data={this.state.one_data}/>
+                  <Item site='two' no="7" func={this.changeBetnum} data={this.state.one_data}/>
+                  <Item site='two' no="8" func={this.changeBetnum} data={this.state.one_data}/>
+                  <Item site='two' no="9" func={this.changeBetnum} data={this.state.one_data}/>
                 </View>
               </View>
             </View>
-
+            {/*第三位*/}
             <View style={styles.sevenContentBtn}>
               <View style={styles.sevenContentBtnLeft}>
                 <Text style={styles.ContentLeftTitle}>第三位</Text>
               </View>
               <View style={styles.ContentRightTop}>
                 <View style={styles.ContentBlock}>
-                  <Item site='three' no="0" func={this.changeBetnum}/>
-                  <Item site='three' no="1" func={this.changeBetnum}/>
-                  <Item site='three' no="2" func={this.changeBetnum}/>
-                  <Item site='three' no="3" func={this.changeBetnum}/>
-                  <Item site='three' no="4" func={this.changeBetnum}/>
+                  <Item site='three' no="0" func={this.changeBetnum} data={this.state.one_data}/>
+                  <Item site='three' no="1" func={this.changeBetnum} data={this.state.one_data}/>
+                  <Item site='three' no="2" func={this.changeBetnum} data={this.state.one_data}/>
+                  <Item site='three' no="3" func={this.changeBetnum} data={this.state.one_data}/>
+                  <Item site='three' no="4" func={this.changeBetnum} data={this.state.one_data}/>
                 </View>
                 <View style={styles.ContentBlock}>
-                  <Item site='three' no="5" func={this.changeBetnum}/>
-                  <Item site='three' no="6" func={this.changeBetnum}/>
-                  <Item site='three' no="7" func={this.changeBetnum}/>
-                  <Item site='three' no="8" func={this.changeBetnum}/>
-                  <Item site='three' no="9" func={this.changeBetnum}/>
+                  <Item site='three' no="5" func={this.changeBetnum} data={this.state.one_data}/>
+                  <Item site='three' no="6" func={this.changeBetnum} data={this.state.one_data}/>
+                  <Item site='three' no="7" func={this.changeBetnum} data={this.state.one_data}/>
+                  <Item site='three' no="8" func={this.changeBetnum} data={this.state.one_data}/>
+                  <Item site='three' no="9" func={this.changeBetnum} data={this.state.one_data}/>
                 </View>
               </View>
             </View>
-
+            {/*第四位*/}
             <View style={styles.sevenContentBtn}>
               <View style={styles.sevenContentBtnLeft}>
                 <Text style={styles.ContentLeftTitle}>第四位</Text>
               </View>
               <View style={styles.ContentRightTop}>
                 <View style={styles.ContentBlock}>
-                  <Item site='four' no="0" func={this.changeBetnum}/>
-                  <Item site='four' no="1" func={this.changeBetnum}/>
-                  <Item site='four' no="2" func={this.changeBetnum}/>
-                  <Item site='four' no="3" func={this.changeBetnum}/>
-                  <Item site='four' no="4" func={this.changeBetnum}/>
+                  <Item site='four' no="0" func={this.changeBetnum} data={this.state.one_data}/>
+                  <Item site='four' no="1" func={this.changeBetnum} data={this.state.one_data}/>
+                  <Item site='four' no="2" func={this.changeBetnum} data={this.state.one_data}/>
+                  <Item site='four' no="3" func={this.changeBetnum} data={this.state.one_data}/>
+                  <Item site='four' no="4" func={this.changeBetnum} data={this.state.one_data}/>
                 </View>
                 <View style={styles.ContentBlock}>
-                  <Item site='four' no="5" func={this.changeBetnum}/>
-                  <Item site='four' no="6" func={this.changeBetnum}/>
-                  <Item site='four' no="7" func={this.changeBetnum}/>
-                  <Item site='four' no="8" func={this.changeBetnum}/>
-                  <Item site='four' no="9" func={this.changeBetnum}/>
+                  <Item site='four' no="5" func={this.changeBetnum} data={this.state.one_data}/>
+                  <Item site='four' no="6" func={this.changeBetnum} data={this.state.one_data}/>
+                  <Item site='four' no="7" func={this.changeBetnum} data={this.state.one_data}/>
+                  <Item site='four' no="8" func={this.changeBetnum} data={this.state.one_data}/>
+                  <Item site='four' no="9" func={this.changeBetnum} data={this.state.one_data}/>
                 </View>
               </View>
             </View>
-
+            {/*第五位*/}
             <View style={styles.sevenContentBtn}>
               <View style={styles.sevenContentBtnLeft}>
                 <Text style={styles.ContentLeftTitle}>第五位</Text>
               </View>
               <View style={styles.ContentRightTop}>
                 <View style={styles.ContentBlock}>
-                  <Item site='five' no="0" func={this.changeBetnum}/>
-                  <Item site='five' no="1" func={this.changeBetnum}/>
-                  <Item site='five' no="2" func={this.changeBetnum}/>
-                  <Item site='five' no="3" func={this.changeBetnum}/>
-                  <Item site='five' no="4" func={this.changeBetnum}/>
+                  <Item site='five' no="0" func={this.changeBetnum} data={this.state.one_data}/>
+                  <Item site='five' no="1" func={this.changeBetnum} data={this.state.one_data}/>
+                  <Item site='five' no="2" func={this.changeBetnum} data={this.state.one_data}/>
+                  <Item site='five' no="3" func={this.changeBetnum} data={this.state.one_data}/>
+                  <Item site='five' no="4" func={this.changeBetnum} data={this.state.one_data}/>
                 </View>
                 <View style={styles.ContentBlock}>
-                  <Item site='five' no="5" func={this.changeBetnum}/>
-                  <Item site='five' no="6" func={this.changeBetnum}/>
-                  <Item site='five' no="7" func={this.changeBetnum}/>
-                  <Item site='five' no="8" func={this.changeBetnum}/>
-                  <Item site='five' no="9" func={this.changeBetnum}/>
+                  <Item site='five' no="5" func={this.changeBetnum} data={this.state.one_data}/>
+                  <Item site='five' no="6" func={this.changeBetnum} data={this.state.one_data}/>
+                  <Item site='five' no="7" func={this.changeBetnum} data={this.state.one_data}/>
+                  <Item site='five' no="8" func={this.changeBetnum} data={this.state.one_data}/>
+                  <Item site='five' no="9" func={this.changeBetnum} data={this.state.one_data}/>
                 </View>
               </View>
             </View>
-
+            {/*第六位*/}
             <View style={styles.sevenContentBtn}>
               <View style={styles.sevenContentBtnLeft}>
                 <Text style={styles.ContentLeftTitle}>第六位</Text>
               </View>
               <View style={styles.ContentRightTop}>
                 <View style={styles.ContentBlock}>
-                  <Item site='six' no="0" func={this.changeBetnum}/>
-                  <Item site='six' no="1" func={this.changeBetnum}/>
-                  <Item site='six' no="2" func={this.changeBetnum}/>
-                  <Item site='six' no="3" func={this.changeBetnum}/>
-                  <Item site='six' no="4" func={this.changeBetnum}/>
+                  <Item site='six' no="0" func={this.changeBetnum} data={this.state.one_data}/>
+                  <Item site='six' no="1" func={this.changeBetnum} data={this.state.one_data}/>
+                  <Item site='six' no="2" func={this.changeBetnum} data={this.state.one_data}/>
+                  <Item site='six' no="3" func={this.changeBetnum} data={this.state.one_data}/>
+                  <Item site='six' no="4" func={this.changeBetnum} data={this.state.one_data}/>
                 </View>
                 <View style={styles.ContentBlock}>
-                  <Item site='six' no="5" func={this.changeBetnum}/>
-                  <Item site='six' no="6" func={this.changeBetnum}/>
-                  <Item site='six' no="7" func={this.changeBetnum}/>
-                  <Item site='six' no="8" func={this.changeBetnum}/>
-                  <Item site='six' no="9" func={this.changeBetnum}/>
+                  <Item site='six' no="5" func={this.changeBetnum} data={this.state.one_data}/>
+                  <Item site='six' no="6" func={this.changeBetnum} data={this.state.one_data}/>
+                  <Item site='six' no="7" func={this.changeBetnum} data={this.state.one_data}/>
+                  <Item site='six' no="8" func={this.changeBetnum} data={this.state.one_data}/>
+                  <Item site='six' no="9" func={this.changeBetnum} data={this.state.one_data}/>
                 </View>
               </View>
             </View>
-
+            {/*第七位*/}
             <View style={styles.sevenContentBtn}>
               <View style={styles.sevenContentBtnLeft}>
                 <Text style={styles.ContentLeftTitle}>第七位</Text>
               </View>
               <View style={styles.ContentRightTop}>
                 <View style={styles.ContentBlock}>
-                  <Item site='seven' no="0" func={this.changeBetnum}/>
-                  <Item site='seven' no="1" func={this.changeBetnum}/>
-                  <Item site='seven' no="2" func={this.changeBetnum}/>
-                  <Item site='seven' no="3" func={this.changeBetnum}/>
-                  <Item site='seven' no="4" func={this.changeBetnum}/>
+                  <Item site='seven' no="0" func={this.changeBetnum} data={this.state.one_data}/>
+                  <Item site='seven' no="1" func={this.changeBetnum} data={this.state.one_data}/>
+                  <Item site='seven' no="2" func={this.changeBetnum} data={this.state.one_data}/>
+                  <Item site='seven' no="3" func={this.changeBetnum} data={this.state.one_data}/>
+                  <Item site='seven' no="4" func={this.changeBetnum} data={this.state.one_data}/>
                 </View>
                 <View style={styles.ContentBlock}>
-                  <Item site='seven' no="5" func={this.changeBetnum}/>
-                  <Item site='seven' no="6" func={this.changeBetnum}/>
-                  <Item site='seven' no="7" func={this.changeBetnum}/>
-                  <Item site='seven' no="8" func={this.changeBetnum}/>
-                  <Item site='seven' no="9" func={this.changeBetnum}/>
+                  <Item site='seven' no="5" func={this.changeBetnum} data={this.state.one_data}/>
+                  <Item site='seven' no="6" func={this.changeBetnum} data={this.state.one_data}/>
+                  <Item site='seven' no="7" func={this.changeBetnum} data={this.state.one_data}/>
+                  <Item site='seven' no="8" func={this.changeBetnum} data={this.state.one_data}/>
+                  <Item site='seven' no="9" func={this.changeBetnum} data={this.state.one_data}/>
                 </View>
               </View>
             </View>
@@ -442,14 +484,8 @@ export default class SevenLottery extends Component {
           flexDirection: 'row',
           justifyContent: 'space-between',
         }}>
-          <View style={{
-            flex: 1,
-            width: '25%',
-            flexDirection: 'column',
-            justifyContent: 'center',
-            marginLeft: 20
-          }}>
-            <Text style={{
+          <View style={{flex: 1, width: '25%', flexDirection: 'column', justifyContent: 'center', marginLeft: 20}}>
+            <Text onPress={this.clearItem} style={{
               borderWidth: 1,
               borderColor: 'white',
               height: 45,

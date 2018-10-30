@@ -48,9 +48,9 @@ import TabBar from './components/base/TabBar';
 // import ScrollDetailPage from './pages/homePage/ScrollDetailPage';
 // import MineEditConfirmMobilePage from './pages/mine/mineMessage/MineEditConfirmMobilePage';
 
+import HappyLottery from './pages/lotto/HappyLottery';
 import SevenLottery from './pages/lotto/SevenLottery';
 import SevenDetail from './pages/lotto/SevenDetail';
-import HappyLottery from './pages/lotto/HappyLottery';
 import HappyDetail from './pages/lotto/HappyDetail';
 import SevenOrderDetails from './pages/lotto/SevenOrderDetails';
 

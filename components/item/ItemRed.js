@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { AppRegistry, View, Text, ScrollView, StyleSheet } from 'react-native';
-import ChooseLotteryTypeLayout from "../homePage/ChooseLotteryTypeLayout";
 
 export default class Item extends Component {
 constructor(props) {
@@ -25,21 +24,15 @@ constructor(props) {
     }
 }
 
-changeSelect=(states,no,site)=>{
-  this.state.isSelect = !states;
-  if(states){
-    this.props.func(0,{field_no:'q',num:no,site:site},this.clearItem);
-  }else {
-    this.props.func(1,{field_no:'q',num:no,site:site},this.clearItem);
+  changeSelect=(states,no)=>{
+    this.state.isSelect = !states;
+    if(states){
+      this.props.func(0,{field_no:'q',num:no});
+    }else {
+      this.props.func(1,{field_no:'q',num:no});
+    }
+
   }
-
-}
-
-clearItem = () => {
-  this.setState({
-    isSelect:false,
-  })
-}
 
   render() {
     let mystyle = {
@@ -60,7 +53,7 @@ clearItem = () => {
     let data = this.props.data;
     for(let i=0 ; i<data.length ; i++){
       let itm = data[i];
-      if(itm.num == this.props.no && itm.site == this.props.site){
+      if(itm.num == this.props.no){
         mystyle = {
           width:65,
           height:65,
@@ -80,15 +73,14 @@ clearItem = () => {
       }
     }
     return (
-        <View>
-            <Text style={mystyle} onPress={() => {this.changeSelect(this.state.isSelect,this.props.no,this.props.site)}}>{this.props.no}</Text>
-        </View>
+      <View>
+        <Text style={mystyle} onPress={() => {this.changeSelect(this.state.isSelect,this.props.no)}}>{this.props.no}</Text>
+      </View>
     );
   }
 };
-// Item.defaultProps = {
-//   data: [],
-// };
+
+
 
 
 

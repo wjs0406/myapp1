@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "antd-mobile-rn": "^2.3.0",
+    "axios": "^0.18.0",
     "react": "16.6.0-alpha.8af6728",
     "react-native": "0.57.3",
     "react-native-keyboard-aware-scroll-view": "^0.7.4",

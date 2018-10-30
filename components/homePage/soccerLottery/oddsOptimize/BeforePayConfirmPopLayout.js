@@ -98,6 +98,9 @@ export default class BeforePayConfirmPopLayout extends Component {
           <Text style={[styles.grayTextStyle, { marginTop: fontMargin }]}>
             账户余额
           </Text>
+          {/*<View>*/}
+            {/*<Text>追加投注</Text>*/}
+          {/*</View>*/}
         </View>
         <View style={{ width: 2, height: 18, backgroundColor: 'rgba(1,13,45,0.6)' }} />
         <View style={styles.upTwoBlockBackStyle}>
@@ -271,9 +274,7 @@ export default class BeforePayConfirmPopLayout extends Component {
           isShowTopMargin={false}
           isShowArrow={false}
         />
-        <View>
-            <Text>追加投注</Text>
-        </View>
+
         <View style={{ height: 5, backgroundColor: 'rgb(246,247,248)' }} />
         {this.renderMiddieContent()}
         <MineBottomButtonLayout

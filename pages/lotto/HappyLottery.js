@@ -1,13 +1,14 @@
 import React, { Component } from 'react';
-import { AppRegistry, View, Text, ScrollView, StyleSheet, Button } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import { Toast } from 'teaset';
 import ModalDropdown from 'react-native-modal-dropdown';
 // 导入组件，组件js文件名首字母大写，导入省略.js
-import Item from '../../components/item/Item';
+import ItemRed from '../../components/item/ItemRed';
 import ItemBlue from '../../components/item/ItemBlue';
 
 // 引用接口示例
-// import * as homePageApi from '../../api/homePage/HomePageApi.js';
+import * as HappyApi from '../../api/lotto/HappyApi.js';
+import Item from "../../components/item/Item";
 
 const styles = StyleSheet.create({
   sevenContent: {
@@ -104,54 +105,34 @@ export default class HappyLottery extends Component {
         autoChooseBack: 2,
         betnum : 0, //几注
         money : 0, //金额
-        num_term: '2018123', //第几期
+        num_term: '', //第几期
+        end_time: '', //截止时间
         // qiu : [],
         q_data : [],
         h_data : [],
         q_data_radom: [5,6,7,8,9,10,11,12,13,14,15,16,17,18],
         h_data_radom:[2,3,4,5,6,7,8,9,10,11,12],
-        redBallDefault : {
-            width:65,
-            height:65,
-            borderRadius: 50,
-            backgroundColor: '#ffffff',
-            borderWidth:2,
-            borderColor:'#e1e1e1',
-            borderStyle:'solid',
-            textAlign:'center',
-            lineHeight:65,
-            color:'#d44840',
-            fontSize: 20,
-            marginRight:10,
-            marginTop:12,
-        },
-        redBallChoose:{
-            width:65,
-            height:65,
-            borderRadius: 50,
-            backgroundColor: '#d44840',
-            borderWidth:2,
-            borderColor:'#e1e1e1',
-            borderStyle:'solid',
-            textAlign:'center',
-            lineHeight:65,
-            color:'#ffffff',
-            fontSize: 20,
-            marginRight:10,
-            marginTop:12,
-        },
+        data_arrs:[],
       };
-      this.clearItem();//清空所有的球，放到生命周期钩子里
+      //this.clearItem();//清空所有的球，放到生命周期钩子里
       //页面加载完调用接口
   }
 
+  //生命周期，render前加载页面
+  componentWillMount() {
+    //获取期号和截止时间
+    let lottery_id = '9';
+    HappyApi.termTime(lottery_id).then((data) => {//接口请求成功执行，后台返回的值data
+      // alert(JSON.stringify(data));
+      this.setState({
+        num_term: data.num_term, //后台返回的值，具体变量名再改
+        end_time: data.end_time,
+      })
+    }).catch((error) => { //接口请求失败执行
+      Toast(error); //错误提示
+    });
 
-    changeBallColor = (flg,qiu)=> {
-        this.setState({
-            betnum: tmpnum,
-            money: tmpmoney,
-        })
-    }
+  }
 
     /**
      * 点击球触发的事件
@@ -159,58 +140,51 @@ export default class HappyLottery extends Component {
      * @param qiu
      */
   changeBetnum = (flg,qiu)=>{
+    let q_data = this.state.q_data;
+    let h_data = this.state.h_data;
     if(flg === 1) { //选中一个球
         if(qiu.field_no === 'q'){ //红球
-            this.state.q_data.push(qiu);
+            q_data.push(qiu);
         } else if((qiu.field_no === 'h')){ //篮球
-            this.state.h_data.push(qiu);
+            h_data.push(qiu);
         }
+
     } else if(flg === 0){ //取消选中一个球
         if(qiu.field_no === 'q'){ //红球
-          const index = this.state.q_data.findIndex(element => (element.num === qiu.num));
+          const index = q_data.findIndex(element => (element.num === qiu.num));
           if(index !== -1){
-              this.state.q_data.splice(index, 1);
+              q_data.splice(index, 1);
           }
         } else if((qiu.field_no === 'h')){ //篮球
-            const index = this.state.h_data.findIndex(element => (element.num === qiu.num));
+            const index = h_data.findIndex(element => (element.num === qiu.num));
             if(index !== -1){
-                this.state.h_data.splice(index, 1);
+                h_data.splice(index, 1);
             }
         }
     }
+    // alert(JSON.stringify(q_data))
+    //重新渲染one_data
+    this.setState({
+      q_data: q_data,
+      h_data: h_data,
+    });
 
     //如果满足最少选择条件，向后台发送请求
     if(this.state.q_data.length >= this.state.frontMinNo && this.state.h_data.length >= this.state.backMiNNo){
 
-      // 临时写死部分=========
-    let tmpnum = this.state.betnum+1;
-    let tmpmoney = tmpnum*2;
+      let qdata = JSON.stringify(this.state.q_data);
+      let hdata = JSON.stringify(this.state.h_data);
 
-    this.setState({
-        betnum:tmpnum,
-        money: tmpmoney,
-    })
-      // end 临时写死部分=========
-
-    //请求接口示例
-      const params = { //往后台传的值
-        "member_id":"123",
-        "rlottery_type_id":"10",
-        "money":this.state.money,
-        "num_term":"20181024",
-        "play_name":"七星彩",
-        "multiple":"12", //倍数
-        "orderInfo":[q_data,h_data]
-      }
-    /*homePageApi.getBuyLotteryNumRequest(params).then((data) => {//接口请求成功执行，后台返回的值data
-          alert(JSON.stringify(data));  //对象用这样弹的窗调试
+    HappyApi.happybetnum(qdata,hdata)
+      .then((data) => {//接口请求成功执行，后台返回的值data
+          //alert(JSON.stringify(data));  //对象用这样弹的窗调试
           this.setState({
-              betnum: data.tmpnum, //后台返回的值，具体变量名再改
-              money: data.tmpmoney,
+              betnum: data.note, //后台返回的值，具体变量名再改
+              money: data.note*2,
           })
       }).catch((error) => { //接口请求失败执行
           Toast(error); //错误提示
-      });*/
+      });
     }
   }
 
@@ -230,6 +204,20 @@ export default class HappyLottery extends Component {
         return false;
     }
 
+    //将one_data、sevbetnum、sevmoney放进all_data
+    let data_arrs =this.state.data_arrs;
+    let object = {
+      q_data:this.state.q_data,
+      h_data:this.state.h_data,
+      betnum: this.state.betnum,
+      money: this.state.money,
+    };
+
+    data_arrs.push(object);
+    this.setState({
+      data_arrs: data_arrs,
+    })
+
     const { navigation } = this.props;  //路由，做页面跳转
     navigation.navigate('HappyDetail', {
       betnum: this.state.betnum, //往跳转的页面传值，变量名：betnum  注数
@@ -237,6 +225,10 @@ export default class HappyLottery extends Component {
       q_data: this.state.q_data,//当前选中的所有红球
       h_data: this.state.h_data,//当前选中的所有蓝球
       num_term: this.state.num_term,//期号
+      end_time: this.state.end_time,//截止时间
+      clearItem: this.clearItem,
+      data_arrs:this.state.data_arrs,
+      clearAll:this.clearItem_all,
     });
   }
 
@@ -248,32 +240,57 @@ export default class HappyLottery extends Component {
      * @returns {boolean}
      */
   radomNums = (type, nums, limitNo) => {
+    let q_data = [];
+    let h_data = [];
     if(!nums || !limitNo) {
       return false;
-    }
-    if(type === 'q'){
-        this.state.q_data = [];
-    }else{
-        this.state.h_data = [];
     }
     for(let i=0;i < parseInt(nums);i++){
       let temp = Math.floor(Math.random()*parseInt(limitNo) + 1);
       if(temp < 10){
         if(type === 'q'){
-            this.state.q_data.push({field_no:'q',num:`0${temp}`});
+            q_data.push({field_no:'q',num:`0${temp}`});
         }else{
-            this.state.h_data.push({field_no:'h',num:`0${temp}`});
+            h_data.push({field_no:'h',num:`0${temp}`});
         }
       } else {
           if(type === 'q'){
-              this.state.q_data.push({field_no:'q',num:`${temp}`});
+              q_data.push({field_no:'q',num:`${temp}`});
           }else{
-              this.state.h_data.push({field_no:'h',num:`${temp}`});
+              h_data.push({field_no:'h',num:`${temp}`});
           }
       }
     }
+    if(type === 'q'){
+      this.setState({
+        q_data: q_data,
+      });
+
+    }else{
+      this.setState({
+        h_data: h_data,
+      });
+    }
     alert(`红区${JSON.stringify(this.state.q_data)}
             蓝区${JSON.stringify(this.state.h_data)}`);
+
+    //如果满足最少选择条件，向后台发送请求
+    if(this.state.q_data.length >= this.state.frontMinNo && this.state.h_data.length >= this.state.backMiNNo){
+
+      let qdata = JSON.stringify(this.state.q_data);
+      let hdata = JSON.stringify(this.state.h_data);
+
+      HappyApi.happybetnum(qdata,hdata)
+        .then((data) => {//接口请求成功执行，后台返回的值data
+          // alert(JSON.stringify(data));  //对象用这样弹的窗调试
+          this.setState({
+            betnum: data.note, //后台返回的值，具体变量名再改
+            money: data.note*2,
+          })
+        }).catch((error) => { //接口请求失败执行
+        Toast(error); //错误提示
+      });
+    }
   }
 
     /**
@@ -293,8 +310,23 @@ export default class HappyLottery extends Component {
    * 清除按钮
    */
   clearItem = () => {
-    this.state.q_data = [];
-    this.state.h_data = [];
+    this.setState({
+      q_data: [], //清空one_data数据
+      h_data: [], //清空one_data数据
+      money:0,
+      betnum:0,
+    })
+  }
+
+  /**
+   * 第二页清除按钮
+   */
+  clearItem_all = () => {
+    this.setState({
+      data_arrs: [], //清空all_data数据
+      betnum: 0,
+      money:0,
+    })
   }
 
   render() {
@@ -305,8 +337,7 @@ export default class HappyLottery extends Component {
           <Text style={styles.sevenContentTitle}>大乐透</Text>
         </View>        
           <View style={styles.ContentBackground}>
-            
-              <Text style={styles.ContentDate}>第{this.state.num_term}期<Text style={{color:'#d44840'}}> 10-19 20:00截止</Text></Text>
+              <Text style={styles.ContentDate}>第{this.state.num_term}期<Text style={{color:'#d44840'}}> {this.state.end_time}截止</Text></Text>
               <View style={styles.ContentTip}>
                 <Text style={styles.ContentTipText}><Text>请至少选择<Text>{this.state.frontMinNo}</Text>个前区号码</Text></Text>
                 <View style={{flexDirection: 'row', }}>
@@ -320,49 +351,49 @@ export default class HappyLottery extends Component {
               <View style={styles.sevenContentBtn}>
                 <View style={styles.ContentRightTop}>
                   <View style={styles.ContentBlock}>
-                    <Item no="01" func={this.changeBetnum}/>
-                    <Item no="02" func={this.changeBetnum}/>
-                    <Item no="03" func={this.changeBetnum}/>
-                    <Item no="04" func={this.changeBetnum}/>
-                    <Item no="05" func={this.changeBetnum}/>
-                    <Item no="06" func={this.changeBetnum}/>
-                    <Item no="07" func={this.changeBetnum}/>
+                    <ItemRed no="01" func={this.changeBetnum} data={this.state.q_data}/>
+                    <ItemRed no="02" func={this.changeBetnum} data={this.state.q_data}/>
+                    <ItemRed no="03" func={this.changeBetnum} data={this.state.q_data}/>
+                    <ItemRed no="04" func={this.changeBetnum} data={this.state.q_data}/>
+                    <ItemRed no="05" func={this.changeBetnum} data={this.state.q_data}/>
+                    <ItemRed no="06" func={this.changeBetnum} data={this.state.q_data}/>
+                    <ItemRed no="07" func={this.changeBetnum} data={this.state.q_data}/>
                   </View>
                   <View style={styles.ContentBlock}>
-                    <Item no="08" func={this.changeBetnum}/>
-                    <Item no="09" func={this.changeBetnum}/>
-                    <Item no="10" func={this.changeBetnum}/>
-                    <Item no="11" func={this.changeBetnum}/>
-                    <Item no="12" func={this.changeBetnum}/>
-                    <Item no="13" func={this.changeBetnum}/>
-                    <Item no="14" func={this.changeBetnum}/>
+                    <ItemRed no="08" func={this.changeBetnum} data={this.state.q_data}/>
+                    <ItemRed no="09" func={this.changeBetnum} data={this.state.q_data}/>
+                    <ItemRed no="10" func={this.changeBetnum} data={this.state.q_data}/>
+                    <ItemRed no="11" func={this.changeBetnum} data={this.state.q_data}/>
+                    <ItemRed no="12" func={this.changeBetnum} data={this.state.q_data}/>
+                    <ItemRed no="13" func={this.changeBetnum} data={this.state.q_data}/>
+                    <ItemRed no="14" func={this.changeBetnum} data={this.state.q_data}/>
                   </View>
                   <View style={styles.ContentBlock}>
-                    <Item no="15" func={this.changeBetnum}/>
-                    <Item no="16" func={this.changeBetnum}/>
-                    <Item no="17" func={this.changeBetnum}/>
-                    <Item no="18" func={this.changeBetnum}/>
-                    <Item no="19" func={this.changeBetnum}/>
-                    <Item no="20" func={this.changeBetnum}/>
-                    <Item no="21" func={this.changeBetnum}/>
+                    <ItemRed no="15" func={this.changeBetnum} data={this.state.q_data}/>
+                    <ItemRed no="16" func={this.changeBetnum} data={this.state.q_data}/>
+                    <ItemRed no="17" func={this.changeBetnum} data={this.state.q_data}/>
+                    <ItemRed no="18" func={this.changeBetnum} data={this.state.q_data}/>
+                    <ItemRed no="19" func={this.changeBetnum} data={this.state.q_data}/>
+                    <ItemRed no="20" func={this.changeBetnum} data={this.state.q_data}/>
+                    <ItemRed no="21" func={this.changeBetnum} data={this.state.q_data}/>
                   </View>
                   <View style={styles.ContentBlock}>
-                    <Item no="22" func={this.changeBetnum}/>
-                    <Item no="23" func={this.changeBetnum}/>
-                    <Item no="24" func={this.changeBetnum}/>
-                    <Item no="25" func={this.changeBetnum}/>
-                    <Item no="26" func={this.changeBetnum}/>
-                    <Item no="27" func={this.changeBetnum}/>
-                    <Item no="28" func={this.changeBetnum}/>
+                    <ItemRed no="22" func={this.changeBetnum} data={this.state.q_data}/>
+                    <ItemRed no="23" func={this.changeBetnum} data={this.state.q_data}/>
+                    <ItemRed no="24" func={this.changeBetnum} data={this.state.q_data}/>
+                    <ItemRed no="25" func={this.changeBetnum} data={this.state.q_data}/>
+                    <ItemRed no="26" func={this.changeBetnum} data={this.state.q_data}/>
+                    <ItemRed no="27" func={this.changeBetnum} data={this.state.q_data}/>
+                    <ItemRed no="28" func={this.changeBetnum} data={this.state.q_data}/>
                   </View>
                   <View style={styles.ContentBlock}>
-                    <Item no="29" func={this.changeBetnum}/>
-                    <Item no="30" func={this.changeBetnum}/>
-                    <Item no="31" func={this.changeBetnum}/>
-                    <Item no="32" func={this.changeBetnum}/>
-                    <Item no="33" func={this.changeBetnum}/>
-                    <Item no="34" func={this.changeBetnum}/>
-                    <Item no="35" func={this.changeBetnum}/>
+                    <ItemRed no="29" func={this.changeBetnum} data={this.state.q_data}/>
+                    <ItemRed no="30" func={this.changeBetnum} data={this.state.q_data}/>
+                    <ItemRed no="31" func={this.changeBetnum} data={this.state.q_data}/>
+                    <ItemRed no="32" func={this.changeBetnum} data={this.state.q_data}/>
+                    <ItemRed no="33" func={this.changeBetnum} data={this.state.q_data}/>
+                    <ItemRed no="34" func={this.changeBetnum} data={this.state.q_data}/>
+                    <ItemRed no="35" func={this.changeBetnum} data={this.state.q_data}/>
                   </View>
                 </View>
               </View>
@@ -382,20 +413,20 @@ export default class HappyLottery extends Component {
               <View style={styles.sevenContentBtn}>          
                 <View style={styles.ContentRightTop}>
                   <View style={styles.ContentBlock}>
-                    <ItemBlue no="01" func={this.changeBetnum}/>
-                    <ItemBlue no="02" func={this.changeBetnum}/>
-                    <ItemBlue no="03" func={this.changeBetnum}/>
-                    <ItemBlue no="04" func={this.changeBetnum}/>
-                    <ItemBlue no="05" func={this.changeBetnum}/>
-                    <ItemBlue no="06" func={this.changeBetnum}/>
-                    <ItemBlue no="07" func={this.changeBetnum}/>
+                    <ItemBlue no="01" func={this.changeBetnum} dataB={this.state.h_data}/>
+                    <ItemBlue no="02" func={this.changeBetnum} dataB={this.state.h_data}/>
+                    <ItemBlue no="03" func={this.changeBetnum} dataB={this.state.h_data}/>
+                    <ItemBlue no="04" func={this.changeBetnum} dataB={this.state.h_data}/>
+                    <ItemBlue no="05" func={this.changeBetnum} dataB={this.state.h_data}/>
+                    <ItemBlue no="06" func={this.changeBetnum} dataB={this.state.h_data}/>
+                    <ItemBlue no="07" func={this.changeBetnum} dataB={this.state.h_data}/>
                   </View>
                   <View style={styles.ContentBlock}>
-                    <ItemBlue no="08" func={this.changeBetnum}/>
-                    <ItemBlue no="09" func={this.changeBetnum}/>
-                    <ItemBlue no="10" func={this.changeBetnum}/>
-                    <ItemBlue no="11" func={this.changeBetnum}/>
-                    <ItemBlue no="12" func={this.changeBetnum}/>
+                    <ItemBlue no="08" func={this.changeBetnum} dataB={this.state.h_data}/>
+                    <ItemBlue no="09" func={this.changeBetnum} dataB={this.state.h_data}/>
+                    <ItemBlue no="10" func={this.changeBetnum} dataB={this.state.h_data}/>
+                    <ItemBlue no="11" func={this.changeBetnum} dataB={this.state.h_data}/>
+                    <ItemBlue no="12" func={this.changeBetnum} dataB={this.state.h_data}/>
                   </View>
                 
                 </View>

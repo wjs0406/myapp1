@@ -58,7 +58,7 @@ export default class MineBottomButtonLayout extends React.PureComponent {
           ]}
           activeOpacity={0.8}
           onPress={() => {
-            this.props.rightOnPress();
+            this.props.rightOnPress();//去支付点击事件
           }}
         >
           <Text style={[{ color: 'white', fontSize: 15, fontWeight: 'bold' }, this.props.textStyle]}>
@@ -89,6 +89,8 @@ MineBottomButtonLayout.defaultProps = {
   },
   rightOnPress: () => {
     // 右面按钮点击
+
+
   },
   showSingle: false,
   style: {},

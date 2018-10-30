@@ -4,6 +4,7 @@ import {Toast} from "teaset";
 import ScoccerLotteryClickBetPopLayout from "../../components/homePage/soccerLottery/ScoccerLotteryClickBetPopLayout";
 import CommonProgressLayout from "../../components/base/CommonProgressLayout";
 import BeforePayConfirmPopLayout from '../../components/homePage/soccerLottery/oddsOptimize/BeforePayConfirmPopLayout';
+import * as HappyApi from "../../api/lotto/HappyApi";
 
 const styles = StyleSheet.create({
   sevenContent: {
@@ -74,111 +75,35 @@ export default class SevenDetail extends Component {
 
   constructor(props) {
     super(props);
-    const {sevbetnum, sevmoney, num_term, one_data} = this.props.navigation.state.params;
+    const {sevbetnum, sevmoney, num_term, one_data, end_time, all_data,clearFunc,clearAll} = this.props.navigation.state.params;
     // alert(`上一页带来的大数据串${JSON.stringify(this.props.navigation.state.params)}`)
     //页面显示红球的选中数据串
+    // if(one_arr.length = 1){
+    //   this.setState({
+    //     pair: '复',
+    //   })
+    // }
 
+    // alert(JSON.stringify(all_data));
 
-    // alert(JSON.stringify(one_data));
-
-    let q_view = '';
-
-    /*one_data.forEach((item, index) => {
-      if (index === 0) {
-        q_view += item.num;
-      } else {
-        q_view += `,${item.num}`;
-      }
-    })*/
-    let one_arr = one_data.filter(item => item.site === 'one');
-    let two_arr = one_data.filter(item => item.site === 'two');
-    let three_arr = one_data.filter(item => item.site === 'three');
-    let four_arr = one_data.filter(item => item.site === 'four');
-    let five_arr = one_data.filter(item => item.site === 'five');
-    let six_arr = one_data.filter(item => item.site === 'six');
-    let seven_arr = one_data.filter(item => item.site === 'seven');
-    if(one_arr.length){
-      one_arr.forEach((item, index) => {
-        if (index === 0) {
-          q_view += item.num;
-        } else {
-          q_view += `,${item.num}`;
-        }
-      })
-    }
-    if(two_arr.length){
-      q_view += '|';
-      two_arr.forEach((item, index) => {
-        if (index === 0) {
-          q_view += item.num;
-        } else {
-          q_view += `,${item.num}`;
-        }
-      })
-    }
-    if(three_arr.length){
-      q_view += '|';
-      three_arr.forEach((item, index) => {
-        if (index === 0) {
-          q_view += item.num;
-        } else {
-          q_view += `,${item.num}`;
-        }
-      })
-    }
-    if(four_arr.length){
-      q_view += '|';
-      four_arr.forEach((item, index) => {
-        if (index === 0) {
-          q_view += item.num;
-        } else {
-          q_view += `,${item.num}`;
-        }
-      })
-    }
-    if(five_arr.length){
-      q_view += '|';
-      five_arr.forEach((item, index) => {
-        if (index === 0) {
-          q_view += item.num;
-        } else {
-          q_view += `,${item.num}`;
-        }
-      })
-    }
-    if(six_arr.length){
-      q_view += '|';
-      six_arr.forEach((item, index) => {
-        if (index === 0) {
-          q_view += item.num;
-        } else {
-          q_view += `,${item.num}`;
-        }
-      })
-    }
-    if(seven_arr.length){
-      q_view += '|';
-      seven_arr.forEach((item, index) => {
-        if (index === 0) {
-          q_view += item.num;
-        } else {
-          q_view += `,${item.num}`;
-        }
-      })
-    }
+    // this.all_data = all_data;
+    this.clearfunc = clearFunc;
+    this.clearAll = clearAll;
 
 
     this.state = {
       sevbetnum: sevbetnum,
       sevmoney: sevmoney,
       num_term: num_term,
+      end_time: end_time,
       popVisiable: false,
       // clickBetPopisVisiable: false,
       // clickChuanPopVisiable: false,
       one_data: one_data,
-      q_view: q_view,
-      pair: '复',
-      renderDomArr:[],
+      all_data: all_data,
+      q_view: '',
+      pair: '',
+      renderDomArr: [],
     }
   }
 
@@ -206,7 +131,7 @@ export default class SevenDetail extends Component {
     return (
       <BeforePayConfirmPopLayout
         balanceMoney={this.balance}
-        needPayMoney={this.state.sevmoney}
+        needPayMoney={this.total_sevmoney}
         clickCancleFunc={() => {
           this.setState({
             popVisiable: !popVisiable
@@ -215,6 +140,36 @@ export default class SevenDetail extends Component {
         clickConfimFunc={(muti) => {
           // muti倍数
           this.buyLotteryRequest(`${(this.totalMoney * muti).toFixed(2)}`, `${muti}`);
+
+          //去支付
+          let member_id = "67";
+          let rlottery_type_id = "10";
+          let num_note = this.total_sevbetnum;
+          let money = this.total_sevmoney;
+          let num_term = this.state.num_term;
+          let play_name = "七星彩";
+          let multiple = "1";
+
+          let orderdata = [];
+           for(let i =0;i<this.state.all_data.length;i++){
+             orderdata.push(this.state.all_data[i].one_data);
+           }
+          orderdata = JSON.stringify(orderdata);//改成all_data
+
+          HappyApi.sevenbuy(member_id, rlottery_type_id, num_note, money, num_term, play_name, multiple, orderdata)
+            .then((data) => {//接口请求成功执行，后台返回的值data
+              // alert(JSON.stringify(data));
+              this.clearAll();
+              this.clearfunc();
+
+              const {navigation} = this.props;
+              navigation.navigate('SevenLottery', {});
+
+            }).catch((error) => { //接口请求失败执行
+            Toast(error); //错误提示
+          });
+
+
         }}
       />
     );
@@ -264,33 +219,156 @@ export default class SevenDetail extends Component {
     );
   }
 
-  /*renderDoms(){
-    let arrs = this.state.renderDomArr;
-    arrs.push(<View style={{flexDirection: 'row', justifyContent: 'space-between', marginTop: 10}}>
-      <Text style={{fontSize: 18, color: '#d44840'}}>{this.state.q_view}</Text>
-      <Text style={{fontSize: 18, color: 'blue'}}>{this.state.h_view}</Text>
-      <Text style={{fontSize: 20}}>{this.state.sevbetnum}注{this.state.sevmoney}元</Text>
-    </View>);
-    this.setState({
-      renderDomArr: arrs,
-    });
-    return (this.state.renderDomArr);
-  }*/
 
   /**
    * 跳转到乐透页
    * @returns {boolean}
    */
   jumpHappy = () => {
+    this.clearfunc();
     const {navigation} = this.props;
-    navigation.navigate('SevenLottery', {});
+    navigation.navigate('SevenLottery', {
+    });
   }
+
 
   confirmFunc = () => {
     const {popVisiable} = this.state;
     this.setState({
       popVisiable: !popVisiable,
     });
+  }
+
+  renderContent = (alldata)=>{
+    //遍历all_data的所有数组
+    let arrItem = [];
+    for (let i = 0; i < alldata.length; i++) {
+      let q_view = '';
+      /**
+       * 选中的球号显示
+       */
+      let one_arr = alldata[i].one_data.filter(item => item.site === 'one');
+      let two_arr = alldata[i].one_data.filter(item => item.site === 'two');
+      let three_arr = alldata[i].one_data.filter(item => item.site === 'three');
+      let four_arr = alldata[i].one_data.filter(item => item.site === 'four');
+      let five_arr = alldata[i].one_data.filter(item => item.site === 'five');
+      let six_arr = alldata[i].one_data.filter(item => item.site === 'six');
+      let seven_arr = alldata[i].one_data.filter(item => item.site === 'seven');
+      this.sevbetnum = alldata[i].sevbetnum;
+      this.sevmoney = alldata[i].sevmoney;
+      if (one_arr.length) {
+        one_arr.forEach((item, index) => {
+          if (index === 0) {
+            q_view += item.num;
+          } else {
+            q_view += `,${item.num}`;
+          }
+        })
+      }
+      if (two_arr.length) {
+        q_view += '|';
+        two_arr.forEach((item, index) => {
+          if (index === 0) {
+            q_view += item.num;
+          } else {
+            q_view += `,${item.num}`;
+          }
+        })
+      }
+      if (three_arr.length) {
+        q_view += '|';
+        three_arr.forEach((item, index) => {
+          if (index === 0) {
+            q_view += item.num;
+          } else {
+            q_view += `,${item.num}`;
+          }
+        })
+      }
+      if (four_arr.length) {
+        q_view += '|';
+        four_arr.forEach((item, index) => {
+          if (index === 0) {
+            q_view += item.num;
+          } else {
+            q_view += `,${item.num}`;
+          }
+        })
+      }
+      if (five_arr.length) {
+        q_view += '|';
+        five_arr.forEach((item, index) => {
+          if (index === 0) {
+            q_view += item.num;
+          } else {
+            q_view += `,${item.num}`;
+          }
+        })
+      }
+      if (six_arr.length) {
+        q_view += '|';
+        six_arr.forEach((item, index) => {
+          if (index === 0) {
+            q_view += item.num;
+          } else {
+            q_view += `,${item.num}`;
+          }
+        })
+      }
+      if (seven_arr.length) {
+        q_view += '|';
+        seven_arr.forEach((item, index) => {
+          if (index === 0) {
+            q_view += item.num;
+          } else {
+            q_view += `,${item.num}`;
+          }
+        })
+      }
+
+      this.q_view = q_view;
+
+      arrItem.push(
+        <View style={styles.HappyContentNum}>
+          <Text style={{fontSize: 20}}>直选{this.state.pair}式</Text>
+
+          <View style={{flexDirection: 'row', justifyContent: 'space-between', marginTop: 10}}>
+            <Text style={{fontSize: 18, color: '#d44840'}}>{this.q_view}</Text>
+            <Text style={{fontSize: 20}}>{this.sevbetnum}注{this.sevmoney}元</Text>
+          </View>
+
+        </View>
+      )
+
+    }
+    return arrItem;
+  }
+
+  renderTotalMoney(alldata){
+    let sevbetnum = 0;
+    let sevmoney = 0;
+    for (let i = 0; i < alldata.length; i++) {
+      sevbetnum += parseInt(alldata[i].sevbetnum);
+      sevmoney += parseInt(alldata[i].sevmoney);
+    }
+    this.total_sevbetnum = sevbetnum;
+    this.total_sevmoney = sevmoney;
+    /*this.setState({
+      sevbetnum: sevbetnum,
+      sevmoney: sevmoney,
+    })*/
+
+    return (<Text style={{color: '#f8da49', fontSize: 20}}>{this.total_sevbetnum}注{this.total_sevmoney}元</Text>);
+  }
+
+  /**
+   * 清除按钮
+   */
+  clearItem = () => {
+    this.setState({
+      all_data:[],
+    })
+    this.clearAll();
   }
 
   render() {
@@ -302,21 +380,15 @@ export default class SevenDetail extends Component {
         </View>
         <View style={styles.ContentBackground}>
           <ScrollView>
-            <Text style={styles.ContentDate}>第{this.state.num_term}期<Text style={{color: '#d44840'}}> 10-19
-              20:00截止</Text></Text>
+            <Text style={styles.ContentDate}>第{this.state.num_term}期<Text
+              style={{color: '#d44840'}}> {this.state.end_time}截止</Text></Text>
             <View style={styles.HappyContentBtn}>
               <Text style={styles.handAdd} onPress={this.jumpHappy}>增加手工投注</Text>
               <Text style={styles.handAdd}>增加机选投注</Text>
             </View>
-            <View style={styles.HappyContentNum} id='renderDom'>
-              <Text style={{fontSize: 20}}>直选{this.state.pair}式</Text>
-
-              <View style={{flexDirection: 'row', justifyContent: 'space-between', marginTop: 10}}>
-                <Text style={{fontSize: 18, color: '#d44840'}}>{this.state.q_view}</Text>
-                <Text style={{fontSize: 18, color: 'blue'}}>{this.state.h_view}</Text>
-                <Text style={{fontSize: 20}}>{this.state.sevbetnum}注{this.state.sevmoney}元</Text>
-              </View>
-
+            {/*根据上一页带来的数据动态生成*/}
+            <View>
+              {this.renderContent(this.state.all_data)}
             </View>
 
           </ScrollView>
@@ -343,7 +415,7 @@ export default class SevenDetail extends Component {
           justifyContent: 'space-between',
         }}>
           <View style={{flex: 1, width: '25%', flexDirection: 'column', justifyContent: 'center', marginLeft: 20}}>
-            <Text style={{
+            <Text onPress={this.clearItem} style={{
               borderWidth: 1,
               borderColor: 'white',
               height: 45,
@@ -356,7 +428,7 @@ export default class SevenDetail extends Component {
             }}>清空</Text>
           </View>
           <View style={{flex: 1, width: '45%', flexDirection: 'column', justifyContent: 'center',}}>
-            <Text style={{color: '#f8da49', fontSize: 20}}>{this.state.sevbetnum}注{this.state.sevmoney}元</Text>
+            {this.renderTotalMoney(this.state.all_data)}
           </View>
           <View style={{flex: 1, width: '30%', flexDirection: 'column', justifyContent: 'center',}}>
             <Text onPress={this.confirmFunc} style={{
