@@ -6,7 +6,7 @@ export default class Item extends Component {
 constructor(props) {
     super(props);
     this.state = {
-        isSelect:false,
+
         mystyle:{
             width:65,
             height:65,
@@ -26,7 +26,7 @@ constructor(props) {
 }
 
 changeSelect=(states,no,site)=>{
-  this.state.isSelect = !states;
+  this.props.isSelect = !states;
   if(states){
     this.props.func(0,{field_no:'q',num:no,site:site},this.clearItem);
   }else {
@@ -35,11 +35,11 @@ changeSelect=(states,no,site)=>{
 
 }
 
-clearItem = () => {
-  this.setState({
-    isSelect:false,
-  })
-}
+// clearItem = () => {
+//   this.setState({
+//     isSelect:false,
+//   })
+// }
 
   render() {
     let mystyle = {
@@ -81,14 +81,12 @@ clearItem = () => {
     }
     return (
         <View>
-            <Text style={mystyle} onPress={() => {this.changeSelect(this.state.isSelect,this.props.no,this.props.site)}}>{this.props.no}</Text>
+            <Text style={mystyle} onPress={() => {this.changeSelect(this.props.isSelect,this.props.no,this.props.site)}}>{this.props.no}</Text>
         </View>
     );
   }
 };
-// Item.defaultProps = {
-//   data: [],
-// };
+
 
 
 

@@ -148,7 +148,7 @@ export default class HappyDetail extends Component {
             orderdata.push(itemarrs);
           }
           orderdata = JSON.stringify(orderdata);//改成all_data
-          alert(orderdata);
+          // alert(orderdata);
           HappyApi.happybuy(member_id, rlottery_type_id, num_note, multiple, money, num_term, play_name, is_bool_append, orderdata)
             .then((data) => {//接口请求成功执行，后台返回的值data
               // alert(JSON.stringify(data));

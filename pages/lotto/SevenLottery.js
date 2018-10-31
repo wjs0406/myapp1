@@ -5,6 +5,7 @@ import {AppRegistry, View, Text, ScrollView, StyleSheet, Button} from 'react-nat
 import Item from '../../components/item/Item';
 import {Toast} from "teaset";
 import * as HappyApi from "../../api/lotto/HappyApi";
+import ItemRed from "../../components/item/ItemRed";
 
 const styles = StyleSheet.create({
   sevenContent: {
@@ -112,6 +113,7 @@ export default class SevenLottery extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      isSelect:false,
       sevbetnum: 0, //几注
       sevmoney: 0, //金额
       num_term: '', //第几期
@@ -147,9 +149,9 @@ export default class SevenLottery extends Component {
    * @param qiu
    */
   changeBetnum = (flg, qiu, clearFun) => {
-    if(typeof this.clearBall !== "function"){
-      this.clearBall = clearFun;
-    }
+    // if(typeof this.clearBall !== "function"){
+    //   this.clearBall = clearFun;
+    // }
     let one_data = this.state.one_data;
     if (flg === 1) { //选中一个球
       switch (qiu.site) {
@@ -184,6 +186,7 @@ export default class SevenLottery extends Component {
       }
     }
     this.setState({
+      isSelect: this.state.isSelect,
       one_data: one_data,
     });
     let one_arr = this.state.one_data.filter(item => item.site === 'one');
@@ -291,7 +294,7 @@ export default class SevenLottery extends Component {
       sevbetnum: 0,
       sevmoney:0,
     })
-    this.clearBall();
+    // this.clearBall();
   }
 
   /**
@@ -327,18 +330,18 @@ export default class SevenLottery extends Component {
               </View>
               <View style={styles.ContentRightTop}>
                 <View style={styles.ContentBlock}>
-                  <Item site='one' no="0" func={this.changeBetnum} data={this.state.one_data}/>
-                  <Item site='one' no="1" func={this.changeBetnum} data={this.state.one_data}/>
-                  <Item site='one' no="2" func={this.changeBetnum} data={this.state.one_data}/>
-                  <Item site='one' no="3" func={this.changeBetnum} data={this.state.one_data}/>
-                  <Item site='one' no="4" func={this.changeBetnum} data={this.state.one_data}/>
+                  <Item site='one' no="0" func={this.changeBetnum} data={this.state.one_data} isSelect={this.state.isSelect}/>
+                  <Item site='one' no="1" func={this.changeBetnum} data={this.state.one_data} isSelect={this.state.isSelect}/>
+                  <Item site='one' no="2" func={this.changeBetnum} data={this.state.one_data} isSelect={this.state.isSelect}/>
+                  <Item site='one' no="3" func={this.changeBetnum} data={this.state.one_data} isSelect={this.state.isSelect}/>
+                  <Item site='one' no="4" func={this.changeBetnum} data={this.state.one_data} isSelect={this.state.isSelect}/>
                 </View>
                 <View style={styles.ContentBlock}>
-                  <Item site='one' no="5" func={this.changeBetnum} data={this.state.one_data}/>
-                  <Item site='one' no="6" func={this.changeBetnum} data={this.state.one_data}/>
-                  <Item site='one' no="7" func={this.changeBetnum} data={this.state.one_data}/>
-                  <Item site='one' no="8" func={this.changeBetnum} data={this.state.one_data}/>
-                  <Item site='one' no="9" func={this.changeBetnum} data={this.state.one_data}/>
+                  <Item site='one' no="5" func={this.changeBetnum} data={this.state.one_data} isSelect={this.state.isSelect}/>
+                  <Item site='one' no="6" func={this.changeBetnum} data={this.state.one_data} isSelect={this.state.isSelect}/>
+                  <Item site='one' no="7" func={this.changeBetnum} data={this.state.one_data} isSelect={this.state.isSelect}/>
+                  <Item site='one' no="8" func={this.changeBetnum} data={this.state.one_data} isSelect={this.state.isSelect}/>
+                  <Item site='one' no="9" func={this.changeBetnum} data={this.state.one_data} isSelect={this.state.isSelect}/>
                 </View>
               </View>
             </View>
@@ -349,18 +352,18 @@ export default class SevenLottery extends Component {
               </View>
               <View style={styles.ContentRightTop}>
                 <View style={styles.ContentBlock}>
-                  <Item site='two' no="0" func={this.changeBetnum} data={this.state.one_data}/>
-                  <Item site='two' no="1" func={this.changeBetnum} data={this.state.one_data}/>
-                  <Item site='two' no="2" func={this.changeBetnum} data={this.state.one_data}/>
-                  <Item site='two' no="3" func={this.changeBetnum} data={this.state.one_data}/>
-                  <Item site='two' no="4" func={this.changeBetnum} data={this.state.one_data}/>
+                  <Item site='two' no="0" func={this.changeBetnum} data={this.state.one_data} isSelect={this.state.isSelect}/>
+                  <Item site='two' no="1" func={this.changeBetnum} data={this.state.one_data} isSelect={this.state.isSelect}/>
+                  <Item site='two' no="2" func={this.changeBetnum} data={this.state.one_data} isSelect={this.state.isSelect}/>
+                  <Item site='two' no="3" func={this.changeBetnum} data={this.state.one_data} isSelect={this.state.isSelect}/>
+                  <Item site='two' no="4" func={this.changeBetnum} data={this.state.one_data} isSelect={this.state.isSelect}/>
                 </View>
                 <View style={styles.ContentBlock}>
-                  <Item site='two' no="5" func={this.changeBetnum} data={this.state.one_data}/>
-                  <Item site='two' no="6" func={this.changeBetnum} data={this.state.one_data}/>
-                  <Item site='two' no="7" func={this.changeBetnum} data={this.state.one_data}/>
-                  <Item site='two' no="8" func={this.changeBetnum} data={this.state.one_data}/>
-                  <Item site='two' no="9" func={this.changeBetnum} data={this.state.one_data}/>
+                  <Item site='two' no="5" func={this.changeBetnum} data={this.state.one_data} isSelect={this.state.isSelect}/>
+                  <Item site='two' no="6" func={this.changeBetnum} data={this.state.one_data} isSelect={this.state.isSelect}/>
+                  <Item site='two' no="7" func={this.changeBetnum} data={this.state.one_data} isSelect={this.state.isSelect}/>
+                  <Item site='two' no="8" func={this.changeBetnum} data={this.state.one_data} isSelect={this.state.isSelect}/>
+                  <Item site='two' no="9" func={this.changeBetnum} data={this.state.one_data} isSelect={this.state.isSelect}/>
                 </View>
               </View>
             </View>
@@ -371,18 +374,18 @@ export default class SevenLottery extends Component {
               </View>
               <View style={styles.ContentRightTop}>
                 <View style={styles.ContentBlock}>
-                  <Item site='three' no="0" func={this.changeBetnum} data={this.state.one_data}/>
-                  <Item site='three' no="1" func={this.changeBetnum} data={this.state.one_data}/>
-                  <Item site='three' no="2" func={this.changeBetnum} data={this.state.one_data}/>
-                  <Item site='three' no="3" func={this.changeBetnum} data={this.state.one_data}/>
-                  <Item site='three' no="4" func={this.changeBetnum} data={this.state.one_data}/>
+                  <Item site='three' no="0" func={this.changeBetnum} data={this.state.one_data} isSelect={this.state.isSelect}/>
+                  <Item site='three' no="1" func={this.changeBetnum} data={this.state.one_data} isSelect={this.state.isSelect}/>
+                  <Item site='three' no="2" func={this.changeBetnum} data={this.state.one_data} isSelect={this.state.isSelect}/>
+                  <Item site='three' no="3" func={this.changeBetnum} data={this.state.one_data} isSelect={this.state.isSelect}/>
+                  <Item site='three' no="4" func={this.changeBetnum} data={this.state.one_data} isSelect={this.state.isSelect}/>
                 </View>
                 <View style={styles.ContentBlock}>
-                  <Item site='three' no="5" func={this.changeBetnum} data={this.state.one_data}/>
-                  <Item site='three' no="6" func={this.changeBetnum} data={this.state.one_data}/>
-                  <Item site='three' no="7" func={this.changeBetnum} data={this.state.one_data}/>
-                  <Item site='three' no="8" func={this.changeBetnum} data={this.state.one_data}/>
-                  <Item site='three' no="9" func={this.changeBetnum} data={this.state.one_data}/>
+                  <Item site='three' no="5" func={this.changeBetnum} data={this.state.one_data} isSelect={this.state.isSelect}/>
+                  <Item site='three' no="6" func={this.changeBetnum} data={this.state.one_data} isSelect={this.state.isSelect}/>
+                  <Item site='three' no="7" func={this.changeBetnum} data={this.state.one_data} isSelect={this.state.isSelect}/>
+                  <Item site='three' no="8" func={this.changeBetnum} data={this.state.one_data} isSelect={this.state.isSelect}/>
+                  <Item site='three' no="9" func={this.changeBetnum} data={this.state.one_data} isSelect={this.state.isSelect}/>
                 </View>
               </View>
             </View>
@@ -393,18 +396,18 @@ export default class SevenLottery extends Component {
               </View>
               <View style={styles.ContentRightTop}>
                 <View style={styles.ContentBlock}>
-                  <Item site='four' no="0" func={this.changeBetnum} data={this.state.one_data}/>
-                  <Item site='four' no="1" func={this.changeBetnum} data={this.state.one_data}/>
-                  <Item site='four' no="2" func={this.changeBetnum} data={this.state.one_data}/>
-                  <Item site='four' no="3" func={this.changeBetnum} data={this.state.one_data}/>
-                  <Item site='four' no="4" func={this.changeBetnum} data={this.state.one_data}/>
+                  <Item site='four' no="0" func={this.changeBetnum} data={this.state.one_data} isSelect={this.state.isSelect}/>
+                  <Item site='four' no="1" func={this.changeBetnum} data={this.state.one_data} isSelect={this.state.isSelect}/>
+                  <Item site='four' no="2" func={this.changeBetnum} data={this.state.one_data} isSelect={this.state.isSelect}/>
+                  <Item site='four' no="3" func={this.changeBetnum} data={this.state.one_data} isSelect={this.state.isSelect}/>
+                  <Item site='four' no="4" func={this.changeBetnum} data={this.state.one_data} isSelect={this.state.isSelect}/>
                 </View>
                 <View style={styles.ContentBlock}>
-                  <Item site='four' no="5" func={this.changeBetnum} data={this.state.one_data}/>
-                  <Item site='four' no="6" func={this.changeBetnum} data={this.state.one_data}/>
-                  <Item site='four' no="7" func={this.changeBetnum} data={this.state.one_data}/>
-                  <Item site='four' no="8" func={this.changeBetnum} data={this.state.one_data}/>
-                  <Item site='four' no="9" func={this.changeBetnum} data={this.state.one_data}/>
+                  <Item site='four' no="5" func={this.changeBetnum} data={this.state.one_data} isSelect={this.state.isSelect}/>
+                  <Item site='four' no="6" func={this.changeBetnum} data={this.state.one_data} isSelect={this.state.isSelect}/>
+                  <Item site='four' no="7" func={this.changeBetnum} data={this.state.one_data} isSelect={this.state.isSelect}/>
+                  <Item site='four' no="8" func={this.changeBetnum} data={this.state.one_data} isSelect={this.state.isSelect}/>
+                  <Item site='four' no="9" func={this.changeBetnum} data={this.state.one_data} isSelect={this.state.isSelect}/>
                 </View>
               </View>
             </View>
@@ -415,18 +418,18 @@ export default class SevenLottery extends Component {
               </View>
               <View style={styles.ContentRightTop}>
                 <View style={styles.ContentBlock}>
-                  <Item site='five' no="0" func={this.changeBetnum} data={this.state.one_data}/>
-                  <Item site='five' no="1" func={this.changeBetnum} data={this.state.one_data}/>
-                  <Item site='five' no="2" func={this.changeBetnum} data={this.state.one_data}/>
-                  <Item site='five' no="3" func={this.changeBetnum} data={this.state.one_data}/>
-                  <Item site='five' no="4" func={this.changeBetnum} data={this.state.one_data}/>
+                  <Item site='five' no="0" func={this.changeBetnum} data={this.state.one_data} isSelect={this.state.isSelect}/>
+                  <Item site='five' no="1" func={this.changeBetnum} data={this.state.one_data} isSelect={this.state.isSelect}/>
+                  <Item site='five' no="2" func={this.changeBetnum} data={this.state.one_data} isSelect={this.state.isSelect}/>
+                  <Item site='five' no="3" func={this.changeBetnum} data={this.state.one_data} isSelect={this.state.isSelect}/>
+                  <Item site='five' no="4" func={this.changeBetnum} data={this.state.one_data} isSelect={this.state.isSelect}/>
                 </View>
                 <View style={styles.ContentBlock}>
-                  <Item site='five' no="5" func={this.changeBetnum} data={this.state.one_data}/>
-                  <Item site='five' no="6" func={this.changeBetnum} data={this.state.one_data}/>
-                  <Item site='five' no="7" func={this.changeBetnum} data={this.state.one_data}/>
-                  <Item site='five' no="8" func={this.changeBetnum} data={this.state.one_data}/>
-                  <Item site='five' no="9" func={this.changeBetnum} data={this.state.one_data}/>
+                  <Item site='five' no="5" func={this.changeBetnum} data={this.state.one_data} isSelect={this.state.isSelect}/>
+                  <Item site='five' no="6" func={this.changeBetnum} data={this.state.one_data} isSelect={this.state.isSelect}/>
+                  <Item site='five' no="7" func={this.changeBetnum} data={this.state.one_data} isSelect={this.state.isSelect}/>
+                  <Item site='five' no="8" func={this.changeBetnum} data={this.state.one_data} isSelect={this.state.isSelect}/>
+                  <Item site='five' no="9" func={this.changeBetnum} data={this.state.one_data} isSelect={this.state.isSelect}/>
                 </View>
               </View>
             </View>
@@ -437,18 +440,18 @@ export default class SevenLottery extends Component {
               </View>
               <View style={styles.ContentRightTop}>
                 <View style={styles.ContentBlock}>
-                  <Item site='six' no="0" func={this.changeBetnum} data={this.state.one_data}/>
-                  <Item site='six' no="1" func={this.changeBetnum} data={this.state.one_data}/>
-                  <Item site='six' no="2" func={this.changeBetnum} data={this.state.one_data}/>
-                  <Item site='six' no="3" func={this.changeBetnum} data={this.state.one_data}/>
-                  <Item site='six' no="4" func={this.changeBetnum} data={this.state.one_data}/>
+                  <Item site='six' no="0" func={this.changeBetnum} data={this.state.one_data} isSelect={this.state.isSelect}/>
+                  <Item site='six' no="1" func={this.changeBetnum} data={this.state.one_data} isSelect={this.state.isSelect}/>
+                  <Item site='six' no="2" func={this.changeBetnum} data={this.state.one_data} isSelect={this.state.isSelect}/>
+                  <Item site='six' no="3" func={this.changeBetnum} data={this.state.one_data} isSelect={this.state.isSelect}/>
+                  <Item site='six' no="4" func={this.changeBetnum} data={this.state.one_data} isSelect={this.state.isSelect}/>
                 </View>
                 <View style={styles.ContentBlock}>
-                  <Item site='six' no="5" func={this.changeBetnum} data={this.state.one_data}/>
-                  <Item site='six' no="6" func={this.changeBetnum} data={this.state.one_data}/>
-                  <Item site='six' no="7" func={this.changeBetnum} data={this.state.one_data}/>
-                  <Item site='six' no="8" func={this.changeBetnum} data={this.state.one_data}/>
-                  <Item site='six' no="9" func={this.changeBetnum} data={this.state.one_data}/>
+                  <Item site='six' no="5" func={this.changeBetnum} data={this.state.one_data} isSelect={this.state.isSelect}/>
+                  <Item site='six' no="6" func={this.changeBetnum} data={this.state.one_data} isSelect={this.state.isSelect}/>
+                  <Item site='six' no="7" func={this.changeBetnum} data={this.state.one_data} isSelect={this.state.isSelect}/>
+                  <Item site='six' no="8" func={this.changeBetnum} data={this.state.one_data} isSelect={this.state.isSelect}/>
+                  <Item site='six' no="9" func={this.changeBetnum} data={this.state.one_data} isSelect={this.state.isSelect}/>
                 </View>
               </View>
             </View>
@@ -459,18 +462,18 @@ export default class SevenLottery extends Component {
               </View>
               <View style={styles.ContentRightTop}>
                 <View style={styles.ContentBlock}>
-                  <Item site='seven' no="0" func={this.changeBetnum} data={this.state.one_data}/>
-                  <Item site='seven' no="1" func={this.changeBetnum} data={this.state.one_data}/>
-                  <Item site='seven' no="2" func={this.changeBetnum} data={this.state.one_data}/>
-                  <Item site='seven' no="3" func={this.changeBetnum} data={this.state.one_data}/>
-                  <Item site='seven' no="4" func={this.changeBetnum} data={this.state.one_data}/>
+                  <Item site='seven' no="0" func={this.changeBetnum} data={this.state.one_data} isSelect={this.state.isSelect}/>
+                  <Item site='seven' no="1" func={this.changeBetnum} data={this.state.one_data} isSelect={this.state.isSelect}/>
+                  <Item site='seven' no="2" func={this.changeBetnum} data={this.state.one_data} isSelect={this.state.isSelect}/>
+                  <Item site='seven' no="3" func={this.changeBetnum} data={this.state.one_data} isSelect={this.state.isSelect}/>
+                  <Item site='seven' no="4" func={this.changeBetnum} data={this.state.one_data} isSelect={this.state.isSelect}/>
                 </View>
                 <View style={styles.ContentBlock}>
-                  <Item site='seven' no="5" func={this.changeBetnum} data={this.state.one_data}/>
-                  <Item site='seven' no="6" func={this.changeBetnum} data={this.state.one_data}/>
-                  <Item site='seven' no="7" func={this.changeBetnum} data={this.state.one_data}/>
-                  <Item site='seven' no="8" func={this.changeBetnum} data={this.state.one_data}/>
-                  <Item site='seven' no="9" func={this.changeBetnum} data={this.state.one_data}/>
+                  <Item site='seven' no="5" func={this.changeBetnum} data={this.state.one_data} isSelect={this.state.isSelect}/>
+                  <Item site='seven' no="6" func={this.changeBetnum} data={this.state.one_data} isSelect={this.state.isSelect}/>
+                  <Item site='seven' no="7" func={this.changeBetnum} data={this.state.one_data} isSelect={this.state.isSelect}/>
+                  <Item site='seven' no="8" func={this.changeBetnum} data={this.state.one_data} isSelect={this.state.isSelect}/>
+                  <Item site='seven' no="9" func={this.changeBetnum} data={this.state.one_data} isSelect={this.state.isSelect}/>
                 </View>
               </View>
             </View>

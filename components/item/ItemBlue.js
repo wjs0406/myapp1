@@ -5,7 +5,7 @@ export default class Item extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      isSelect:false,
+
       mystyle:{
         width:65,
         height:65,
@@ -25,7 +25,7 @@ export default class Item extends Component {
   }
 
   changeSelect=(states,no)=>{
-    this.state.isSelect = !states;
+    this.props.isSelect = !states;
     if(states){
       this.props.func(0,{field_no:'h',num:no});
     }else {
@@ -74,7 +74,7 @@ export default class Item extends Component {
     }
     return (
       <View>
-        <Text style={mystyle} onPress={() => {this.changeSelect(this.state.isSelect,this.props.no)}}>{this.props.no}</Text>
+        <Text style={mystyle} onPress={() => {this.changeSelect(this.props.isSelect,this.props.no)}}>{this.props.no}</Text>
       </View>
     );
   }
