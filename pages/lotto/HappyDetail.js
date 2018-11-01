@@ -39,6 +39,8 @@ const styles = StyleSheet.create({
     height: 95,
     borderTopWidth: 1,
     borderTopColor: '#c7c7cb',
+    borderBottomWidth: 1,
+    borderBottomColor: '#c7c7cb',
     flexDirection: 'row',
     justifyContent: 'space-between',
     backgroundColor: '#ffffff',
@@ -62,11 +64,48 @@ const styles = StyleSheet.create({
     paddingTop: 20,
     paddingLeft: 20,
     paddingRight: 20,
-    borderTopWidth: 1,
-    borderTopColor: '#c7c7cb',
     borderBottomWidth: 1,
     borderBottomColor: '#c7c7cb',
     backgroundColor: '#ffffff',
+  },
+  HappyBg: {
+    height: 36,
+    width: '100%',
+    lineHeight: 36,
+    fontSize: 18,
+    color: '#666666',
+    justifyContent: 'space-between',
+    borderTopWidth: 1,
+    borderTopColor: '#c7c7cb',
+    paddingLeft: 20,
+  },
+  HappyBgClear: {
+    flex: 2,
+    width: '100%',
+    backgroundColor: '#d44840',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  HappyBgClearRight: {
+    borderWidth: 1,
+    borderColor: 'white',
+    height: 45,
+    width: 100,
+    borderRadius: 22,
+    color: 'white',
+    textAlign: 'center',
+    lineHeight: 45,
+    fontSize: 20
+  },
+  HappyBgClearBuy: {
+    height: 45,
+    width: 140,
+    backgroundColor: 'white',
+    borderRadius: 22,
+    color: '#d44840',
+    textAlign: 'center',
+    lineHeight: 45,
+    fontSize: 20
   }
 
 });
@@ -75,7 +114,7 @@ export default class HappyDetail extends Component {
 
   constructor(props) {
     super(props);
-    const {betnum, money, num_term, q_data, h_data,end_time,clearItem,data_arrs,clearAll} = this.props.navigation.state.params;
+    const {betnum, money, num_term, q_data, h_data, end_time, clearItem, data_arrs, clearAll} = this.props.navigation.state.params;
     // alert(`上一页带来的大数据串${JSON.stringify(this.props.navigation.state.params)}`)
     this.clearItem = clearItem;
     this.clearAll = clearAll;
@@ -85,12 +124,10 @@ export default class HappyDetail extends Component {
       money: money,
       num_term: num_term,
       popVisiable: false,
-      // clickBetPopisVisiable: false,
-      // clickChuanPopVisiable: false,
       q_data: q_data,
       h_data: h_data,
       end_time: end_time,
-      data_arrs:data_arrs,
+      data_arrs: data_arrs,
     }
   }
 
@@ -135,10 +172,8 @@ export default class HappyDetail extends Component {
           let num_term = this.state.num_term;
           let play_name = "大乐透";
           let is_bool_append = "1";
-          // let qdataorder = JSON.stringify(this.state.q_data);
-          // let hdataorder = JSON.stringify(this.state.h_data);
           let orderdata = [];
-          for(let i =0;i<this.state.data_arrs.length;i++){
+          for (let i = 0; i < this.state.data_arrs.length; i++) {
             let itemarrs = [];
             let itemdata = {
               "q_data": this.state.data_arrs[i].q_data,
@@ -148,10 +183,8 @@ export default class HappyDetail extends Component {
             orderdata.push(itemarrs);
           }
           orderdata = JSON.stringify(orderdata);//改成all_data
-          // alert(orderdata);
           HappyApi.happybuy(member_id, rlottery_type_id, num_note, multiple, money, num_term, play_name, is_bool_append, orderdata)
             .then((data) => {//接口请求成功执行，后台返回的值data
-              // alert(JSON.stringify(data));
               //跳转到大乐透页面
               this.clearItem();
               this.clearAll();
@@ -171,34 +204,6 @@ export default class HappyDetail extends Component {
     const obj = this.uploadArr;
     const jsonStr = JSON.stringify(obj);
     const {popVisiable} = this.state;
-
-    //this.commonProgress.show();
-    // HomePageApi.buySoccerLotteryRequest(
-    //     global.userId,
-    //     this.props.navigation.state.params.id,
-    //     money,
-    //     muti,
-    //     jsonStr,
-    //     this.state.chuanText,
-    //     this.numNote,
-    //     this.numTerm,
-    // )
-    // .then(response => {
-    //     this.setState({
-    //         popVisiable: !popVisiable
-    //     });
-    //     this.commonProgress.hidden();
-    //     Toast.success('下单成功');
-    //     this.props.navigation.state.params.callBack(this.state.dataArr[0].data);
-    //     this.props.navigation.goBack();
-    // })
-    // .catch(error => {
-    //     this.commonProgress.hidden();
-    //     this.setState({
-    //         popVisiable: !popVisiable
-    //     });
-    //     global.showErrorMessage(error);
-    // });
   }
 
   renderProgress() {
@@ -238,11 +243,13 @@ export default class HappyDetail extends Component {
     this.clearAll();
   }
 
-  renderRows(data_arrs){
+  // 增加手工投注
+  renderRows(data_arrs) {
     let arrDoms = [];
-    for(let i = 0;i < data_arrs.length;i++) {
+    for (let i = 0; i < data_arrs.length; i++) {
       this.money = data_arrs[i].money;
       this.betnum = data_arrs[i].betnum;
+      this.data_double = data_arrs[i].data_double;
       let q_view = '';
       let h_view = '';
       data_arrs[i].q_data.forEach((item, index) => {
@@ -260,20 +267,11 @@ export default class HappyDetail extends Component {
         }
       })
 
-      /*for (var j = 0; j < q_view.length; i++) {
-        for (var k = j + 1; k < q_view.length; k++) {
-          if (q_view[j] > q_view[k]) {
-            var tmp = q_view[j];
-            q_view[j] = q_view[k];
-            q_view[k] = tmp;
-          }
-        }
-      }*/
       this.q_view = q_view;
       this.h_view = h_view;
 
-      arrDoms.push(<View style={styles.HappyContentNum}>
-        <Text style={{fontSize: 20}}>直选单式</Text>
+      arrDoms.unshift(<View style={styles.HappyContentNum}>
+        <Text style={{fontSize: 20}}>直选{this.data_double}式</Text>
         <View style={{flexDirection: 'row', justifyContent: 'space-between', marginTop: 10}}>
           <Text style={{fontSize: 18, color: '#d44840'}}>{this.q_view}</Text>
           <Text style={{fontSize: 18, color: 'blue'}}>{this.h_view}</Text>
@@ -284,7 +282,63 @@ export default class HappyDetail extends Component {
     return arrDoms;
   }
 
-  renderTotalMoney(alldata){
+  // 增加机选投注
+  autoChooseFunc = () => {
+
+    // 生成五个随机数
+    let val = '';
+    let autoResult = [];//准备一个空数组装结果
+    for (let i = 0; i < 5; i++) {//随机生成5个数
+      val = Math.floor(Math.random() * 35 + 1);//[1-35]
+      //冒泡排序的方法 进行对比
+      for (let j = 0; j < autoResult.length; j++) {
+        if (autoResult[j] == val) {//如果与之前存在的相比较 相等就重新生成一个数字
+          autoResult.splice(j, 1);
+          i--;
+        }
+      }
+      // 小于10的数字前面加0
+      if (val < 10) {
+        autoResult.push({field_no: 'q', num: `0${val}`});
+      } else {
+        autoResult.push({field_no: 'q', num: `${val}`});
+      }
+    }
+
+    // 生成2个随机数
+    let valTow = '';
+    let autoResultTow = [];//准备一个空数组装结果
+    for (let i = 0; i < 2; i++) {//随机生成2个数
+      valTow = Math.floor(Math.random() * 12 + 1)//[1-35]
+      //冒泡排序的方法 进行对比
+      for (let j = 0; j < autoResultTow.length; j++) {
+        if (autoResultTow[j] == valTow) {//如果与之前存在的相比较 相等就重新生成一个数字
+          autoResultTow.splice(j, 1);
+          i--;
+        }
+      }
+      // 小于10的数字前面加0
+      if (valTow < 10) {
+        autoResultTow.push({field_no: 'h', num: `0${valTow}`});
+      } else {
+        autoResultTow.push({field_no: 'h', num: `${valTow}`});
+      }
+    }
+    let autoPage = this.state.data_arrs;
+    let object = {
+      q_data: autoResult,
+      h_data: autoResultTow,
+      betnum: 1,
+      money: 2,
+      data_double: '单',
+    };
+    autoPage.push(object);
+    this.setState({
+      data_arrs: autoPage,
+    });
+  }
+
+  renderTotalMoney(alldata) {
     let betnum = 0;
     let money = 0;
     for (let i = 0; i < alldata.length; i++) {
@@ -293,13 +347,10 @@ export default class HappyDetail extends Component {
     }
     this.total_betnum = betnum;
     this.total_money = money;
-
     return (<Text style={{color: '#f8da49', fontSize: 20}}>{this.total_betnum}注{this.total_money}元</Text>);
   }
 
-
   render() {
-
     return (
       <View style={styles.sevenContent}>
         <View style={styles.sevenContentHeader}>
@@ -307,63 +358,29 @@ export default class HappyDetail extends Component {
         </View>
         <View style={styles.ContentBackground}>
           <ScrollView>
-            <Text style={styles.ContentDate}>第{this.state.num_term}期<Text style={{color: '#d44840'}}>{this.state.end_time}截止</Text></Text>
+            <Text style={styles.ContentDate}>第{this.state.num_term}期<Text
+              style={{color: '#d44840'}}>{this.state.end_time}截止</Text></Text>
             <View style={styles.HappyContentBtn}>
               <Text style={styles.handAdd} onPress={this.jumpHappy}>增加手工投注</Text>
-              <Text style={styles.handAdd}>增加机选投注</Text>
+              <Text style={styles.handAdd} onPress={this.autoChooseFunc}>增加机选投注</Text>
             </View>
+            {/*根据上一页带来的数据动态生成*/}
             {this.renderRows(this.state.data_arrs)}
-
           </ScrollView>
 
         </View>
         <View style={{height: 36, width: '100%', lineHeight: 36, backgroundColor: '#ffffff'}}>
-          <Text style={{
-            height: 36,
-            width: '100%',
-            lineHeight: 36,
-            fontSize: 18,
-            color: '#666666',
-            justifyContent: 'space-between',
-            borderTopWidth: 1,
-            borderTopColor: '#c7c7cb',
-            paddingLeft: 20,
-          }}>我已阅读并同意《彩民与彩站交易须知》</Text>
+          <Text style={styles.HappyBg}>我已阅读并同意《彩民与彩站交易须知》</Text>
         </View>
-        <View style={{
-          flex: 2,
-          width: '100%',
-          backgroundColor: '#d44840',
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-        }}>
+        <View style={styles.HappyBgClear}>
           <View style={{flex: 1, width: '25%', flexDirection: 'column', justifyContent: 'center', marginLeft: 20}}>
-            <Text onPress={this.clearBall} style={{
-              borderWidth: 1,
-              borderColor: 'white',
-              height: 45,
-              width: 100,
-              borderRadius: 22,
-              color: 'white',
-              textAlign: 'center',
-              lineHeight: 45,
-              fontSize: 20
-            }}>清空</Text>
+            <Text onPress={this.clearBall} style={styles.HappyBgClearRight}>清空</Text>
           </View>
           <View style={{flex: 1, width: '45%', flexDirection: 'column', justifyContent: 'center',}}>
             {this.renderTotalMoney(this.state.data_arrs)}
           </View>
           <View style={{flex: 1, width: '30%', flexDirection: 'column', justifyContent: 'center',}}>
-            <Text onPress={this.confirmFunc} style={{
-              height: 45,
-              width: 140,
-              backgroundColor: 'white',
-              borderRadius: 22,
-              color: '#d44840',
-              textAlign: 'center',
-              lineHeight: 45,
-              fontSize: 20
-            }}>下单去购买</Text>
+            <Text onPress={this.confirmFunc} style={styles.HappyBgClearBuy}>下单去购买</Text>
           </View>
         </View>
         {this.renderPopView()}

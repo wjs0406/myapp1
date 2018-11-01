@@ -8,7 +8,6 @@
 
 import React, { Component } from 'react';
 import { ToastAndroid, BackHandler } from 'react-native';
-
 import { StackNavigator, TabNavigator, NavigationActions } from 'react-navigation';
 // import HomePage from './pages/homePage/HomePage';
 import TabBar from './components/base/TabBar';
@@ -130,8 +129,8 @@ const HomeTab = TabNavigator(
 
 const AppStack = StackNavigator(
   {
-    SevenLottery: { screen: SevenLottery },
     HappyLottery: { screen: HappyLottery },
+    SevenLottery: { screen: SevenLottery },
     SevenDetail: { screen: SevenDetail },
     HappyDetail: { screen: HappyDetail },
     SevenOrderDetails: { screen: SevenOrderDetails },

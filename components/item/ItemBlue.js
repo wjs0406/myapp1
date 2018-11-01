@@ -5,7 +5,7 @@ export default class Item extends Component {
   constructor(props) {
     super(props);
     this.state = {
-
+      isSelect:false,
       mystyle:{
         width:65,
         height:65,
@@ -25,7 +25,7 @@ export default class Item extends Component {
   }
 
   changeSelect=(states,no)=>{
-    this.props.isSelect = !states;
+    this.state.isSelect = !states;
     if(states){
       this.props.func(0,{field_no:'h',num:no});
     }else {
@@ -50,10 +50,12 @@ export default class Item extends Component {
       marginRight:10,
       marginTop:12,
     };
+    this.state.isSelect=false;
     let dataB = this.props.dataB;
     for(let i=0 ; i<dataB.length ; i++){
       let itm = dataB[i];
       if(itm.num == this.props.no){
+        this.state.isSelect=true;
         mystyle = {
           width:65,
           height:65,
@@ -74,7 +76,7 @@ export default class Item extends Component {
     }
     return (
       <View>
-        <Text style={mystyle} onPress={() => {this.changeSelect(this.props.isSelect,this.props.no)}}>{this.props.no}</Text>
+        <Text style={mystyle} onPress={() => {this.changeSelect(this.state.isSelect,this.props.no)}}>{this.props.no}</Text>
       </View>
     );
   }
