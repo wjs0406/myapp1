@@ -288,11 +288,12 @@ export default class HappyDetail extends Component {
     // 生成五个随机数
     let val = '';
     let autoResult = [];//准备一个空数组装结果
-    for (let i = 0; i < 5; i++) {//随机生成5个数
+    for ( let i = 0; i < 5; i++) {//随机生成5个数
       val = Math.floor(Math.random() * 35 + 1);//[1-35]
       //冒泡排序的方法 进行对比
-      for (let j = 0; j < autoResult.length; j++) {
-        if (autoResult[j] == val) {//如果与之前存在的相比较 相等就重新生成一个数字
+      for ( let j = 0; j < autoResult.length; j++) {
+        if (autoResult[j].num == val) {//如果与之前存在的相比较 相等就重新生成一个数字
+          // alert(JSON.stringify(autoResult[j].num)+'--------'+JSON.stringify(val));
           autoResult.splice(j, 1);
           i--;
         }
@@ -312,7 +313,7 @@ export default class HappyDetail extends Component {
       valTow = Math.floor(Math.random() * 12 + 1)//[1-35]
       //冒泡排序的方法 进行对比
       for (let j = 0; j < autoResultTow.length; j++) {
-        if (autoResultTow[j] == valTow) {//如果与之前存在的相比较 相等就重新生成一个数字
+        if (autoResultTow[j].num == valTow) {//如果与之前存在的相比较 相等就重新生成一个数字
           autoResultTow.splice(j, 1);
           i--;
         }

@@ -244,7 +244,7 @@ export default class SevenDetail extends Component {
     let autoResult = [];//准备一个空数组装结果
     let tempArr = [];
     for (let i = 0; i < 7; i++) {//随机生成7个数
-      val = Math.floor(Math.random() * 7 + 0)//[0-7]
+      val = Math.floor(Math.random() * 10 + 0)//[0-9]
       tempArr.push(`${val}`);
     }
     autoResult.push({field_no: 'q', num: tempArr[0], site: 'one'});

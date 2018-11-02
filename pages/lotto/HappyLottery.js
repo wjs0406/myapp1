@@ -196,6 +196,9 @@ export default class HappyLottery extends Component {
         money: 0,
       })
     }
+
+
+
   }
 
   /**
@@ -227,6 +230,16 @@ export default class HappyLottery extends Component {
     this.setState({
       data_arrs: data_arrs,
     })
+
+
+
+    if(this.state.money>20000){
+      Toast.info(`单注投注额不能超过￥20000`);
+      return false;
+    }
+
+
+
     const {navigation} = this.props;  //路由，做页面跳转
     navigation.navigate('HappyDetail', {//往跳转的页面传值
       betnum: this.state.betnum, //注数
